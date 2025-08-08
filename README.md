@@ -2,6 +2,11 @@
 
 Collection of avant-garde products for the smart home.
 
+We are using [atopile](https://atopile.io) to design a reusable electronics library for building smart home products. The idea is that most smart home products have the same basic components and can be built with the same tools. 
+We are using [esphome](https://esphome.io) to build the firmware for the products.
+All pcbs are designed to be manufactured by [JLCPCB](https://jlcpcb.com).
+
+
 ## 📦 Products
 
 - [Hydrohomie](./src/products/hydrohomie) - Scale measuring your water intake per day.
@@ -14,7 +19,7 @@ Collection of avant-garde products for the smart home.
 - KiCad 8.0 or later (for PCB viewing/editing)
 - Basic SMD soldering equipment
 
-### Building NONOS
+### Building HiveHaus products
 
 1. **Clone the repository**
 
@@ -54,7 +59,7 @@ We love contributions! Whether it's:
 
 ## 📄 License
 
-NONOS is open source hardware, released under the MIT License. See [LICENSE](LICENSE) for details.
+HiveHaus is open source hardware, released under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
