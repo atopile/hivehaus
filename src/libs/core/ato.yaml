@@ -1,4 +1,4 @@
-requires-atopile: "0.11.1"
+requires-atopile: 0.11.1
 
 paths:
   src: ./
@@ -6,7 +6,7 @@ paths:
 
 builds:
   default:
-    entry: main.ato:App
+    entry: main.ato:Core
 
 # This metadata is only required for publishing
 # Uncomment it and fill out the fields to publish your package
@@ -21,3 +21,7 @@ builds:
 #   license: MIT license
 #   homepage: # fill me!
 
+dependencies:
+- type: registry
+  identifier: atopile/espressif-esp32-c3
+  release: 0.1.4

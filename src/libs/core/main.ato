@@ -1,0 +1,4 @@
+from "atopile/espressif-esp32-c3/esp32_c3_mini.ato" import ESP32_C3_MINI_1_driver
+
+module Core:
+    mcu = new ESP32_C3_MINI_1_driver
