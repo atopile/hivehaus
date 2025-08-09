@@ -9,13 +9,15 @@ from faebryk.libs.units import Quantity
 from faebryk.libs.util import cast_assert, dict_value_visitor, merge_dicts
 import yaml
 
+from .has_esphome_config import has_esphome_config
+
 
 class exports_esphome_config(F.provides_build_target.impl()):
     name = "esphome-config"
 
     @staticmethod
     def _make_esphome_config(G: Graph, solver: Solver) -> dict:
-        esphome_components = GraphFunctions(G).nodes_with_trait(F.has_esphome_config)
+        esphome_components = GraphFunctions(G).nodes_with_trait(has_esphome_config)
 
         esphome_config = merge_dicts(*[t.get_config() for _, t in esphome_components])
 

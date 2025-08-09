@@ -11,10 +11,12 @@ import faebryk.library._F as F
 from faebryk.libs.util import dict_value_visitor
 from yaml.constructor import ConstructorError
 
+from .has_esphome_config import has_esphome_config
+
 SUBST_RE = re.compile(r"^\{\{(.*)\}\}$")
 
 
-class has_esphome_config_from_template(F.has_esphome_config.impl()):
+class has_esphome_config_from_template(has_esphome_config.impl()):
     def __init__(self, path: str):
         super().__init__()
         self._path = path
