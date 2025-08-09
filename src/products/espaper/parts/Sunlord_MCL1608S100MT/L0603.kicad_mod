@@ -1,0 +1,204 @@
+(footprint "Sunlord_MCL1608S100MT:L0603"
+    (layer "F.Cu")
+    (descr "")
+    (version 20241229)
+    (generator "faebryk")
+    (generator_version "v5")
+    (tedit "5DC5F6A4")
+    (property "Reference" "REF**"
+        (at 0 -4 0)
+        (layer "F.SilkS")
+        (hide no)
+        (uuid "c68916d6-b6d7-43af-825c-4d8f9172ec7a")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+    )
+    (property "Value" "L0603"
+        (at 0 4 0)
+        (layer "F.Fab")
+        (hide no)
+        (uuid "e148cf40-44dd-44fc-b870-c1fccbdbd5bd")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+    )
+    (property "checksum" "ab6f98936125220a2651464d931e46a6d13fbc4b3b1626c401a90acb17c8e1a6"
+        (at 0 0 0)
+        (layer "User.9")
+        (hide no)
+        (uuid "9be3f51a-8147-4b69-b32e-74fd98990c37")
+        (effects
+            (font
+                (size 0.125 0.125)
+                (thickness 0.01875)
+            )
+            (hide yes)
+        )
+    )
+    (attr smd)
+    (fp_line
+        (start -1.27 0.65)
+        (end -1.43 0.5)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "a2aec8a5-a13d-4361-b42e-c056cc25b472")
+    )
+    (fp_line
+        (start -1.43 0.5)
+        (end -1.43 -0.51)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "c78d29a3-ea6e-4ebd-83a0-40c2fbbd951a")
+    )
+    (fp_line
+        (start -1.43 -0.51)
+        (end -1.27 -0.65)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "3fea3b9a-93d0-4180-80d7-4e445c7935e0")
+    )
+    (fp_line
+        (start 1.27 -0.65)
+        (end 1.42 -0.5)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "106285b2-5188-4dde-aa26-a59a7adaec1c")
+    )
+    (fp_line
+        (start 1.42 -0.5)
+        (end 1.42 0.52)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "a768a669-4552-4e94-963e-e4d428a555a3")
+    )
+    (fp_line
+        (start 1.42 0.52)
+        (end 1.27 0.65)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "0cef5a4b-3cb3-42d8-9a98-641fef3339f9")
+    )
+    (fp_line
+        (start -1.28 -0.65)
+        (end -0.51 -0.65)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "f55aaaca-abbf-4d87-80d3-a8715b0cc7c0")
+    )
+    (fp_line
+        (start 1.27 0.65)
+        (end 0.51 0.65)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "5296488c-3c67-4ef9-a37c-929fe5c2ea4d")
+    )
+    (fp_line
+        (start -1.28 0.65)
+        (end -0.51 0.65)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "a8d97cc6-3388-4e09-8beb-89558fe425ed")
+    )
+    (fp_line
+        (start 1.27 -0.65)
+        (end 0.51 -0.65)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "bad2cba9-3d6f-4fb9-9b32-f2d3d37eedbf")
+    )
+    (fp_circle
+        (center -0.8 0.4)
+        (end -0.77 0.4)
+        (stroke
+            (width 0.06)
+            (type solid)
+        )
+        (fill no)
+        (layer "F.Fab")
+        (uuid "7832b7ca-978d-4acf-bd55-6d6a34b42f68")
+    )
+    (fp_text user "%R"
+        (at 0 0 0)
+        (layer "F.Fab")
+        (uuid "19dad2c1-c610-463d-9d09-4b41693242c9")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+        (unlocked no)
+    )
+    (fp_text user "${REFERENCE}"
+        (at 0 -4 0)
+        (layer "F.SilkS")
+        (uuid "c68916d6-b6d7-43af-825c-4d8f9172ec7a")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+        (unlocked no)
+    )
+    (pad "1" smd rect
+        (at -0.7 0 180)
+        (size 0.8 0.86)
+        (layers "F.Cu" "F.Paste" "F.Mask")
+        (uuid "f77db969-c49d-4152-9fd9-f7273038dd04")
+    )
+    (pad "2" smd rect
+        (at 0.7 0 180)
+        (size 0.8 0.86)
+        (layers "F.Cu" "F.Paste" "F.Mask")
+        (uuid "989f687b-abe0-46cc-8320-c54384a092dd")
+    )
+    (model "${KIPRJMOD}/../../parts/Sunlord_MCL1608S100MT/L0603_L1.6-W0.8-H0.5_BEAD.step"
+        (offset
+            (xyz 0 0 0)
+        )
+        (scale
+            (xyz 1 1 1)
+        )
+        (rotate
+            (xyz 0 0 180)
+        )
+    )
+)

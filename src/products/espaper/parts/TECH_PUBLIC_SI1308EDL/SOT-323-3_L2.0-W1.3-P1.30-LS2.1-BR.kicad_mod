@@ -1,0 +1,171 @@
+(footprint "TECH_PUBLIC_SI1308EDL:SOT-323-3_L2.0-W1.3-P1.30-LS2.1-BR"
+    (layer "F.Cu")
+    (descr "")
+    (version 20241229)
+    (generator "faebryk")
+    (generator_version "v5")
+    (tedit "5DC5F6A4")
+    (property "Reference" "REF**"
+        (at 0 -4.65 0)
+        (layer "F.SilkS")
+        (hide no)
+        (uuid "44e9d2ec-ab1b-4e28-a1fe-b092b8d45863")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+    )
+    (property "Value" "SOT-323-3_L2.0-W1.3-P1.30-LS2.1-BR"
+        (at 0 4.65 0)
+        (layer "F.Fab")
+        (hide no)
+        (uuid "ee728cd5-723f-45af-89e7-2e71fbfe307e")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+    )
+    (property "checksum" "bf9b4010842f5b4e7ff36cc2b2306fc2464ae2baaf8a1553d53d5aec7d5a6896"
+        (at 0 0 0)
+        (layer "User.9")
+        (hide no)
+        (uuid "7f1e2d7f-9f43-437e-906e-bfa06200cdc3")
+        (effects
+            (font
+                (size 0.125 0.125)
+                (thickness 0.01875)
+            )
+            (hide yes)
+        )
+    )
+    (attr smd)
+    (fp_line
+        (start 0.7 -1.13)
+        (end -0.7 -1.13)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "2e1ae946-60f3-4182-9b84-0e3c67c565ff")
+    )
+    (fp_line
+        (start -0.7 -1.13)
+        (end -0.7 -0.41)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "95234a7d-3869-4f49-ae79-3458fbf47388")
+    )
+    (fp_line
+        (start 0.7 1.13)
+        (end -0.7 1.13)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "ec851c3c-5fc4-4e56-8bf2-995db28b1c79")
+    )
+    (fp_line
+        (start -0.7 1.13)
+        (end -0.7 0.41)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "4734558f-3816-4a09-8d0f-a8af69cfa8b8")
+    )
+    (fp_line
+        (start 0.7 -0.24)
+        (end 0.7 0.24)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "385fad34-c0e0-4075-a64a-0c0bb749d248")
+    )
+    (fp_circle
+        (center 1.05 1)
+        (end 1.08 1)
+        (stroke
+            (width 0.06)
+            (type solid)
+        )
+        (fill no)
+        (layer "F.Fab")
+        (uuid "61e1383e-13ee-4a34-8852-a89b6bd1fa71")
+    )
+    (fp_circle
+        (center 1.45 0.65)
+        (end 1.55 0.65)
+        (stroke
+            (width 0.2)
+            (type solid)
+        )
+        (fill no)
+        (layer "Cmts.User")
+        (uuid "393273c7-aafe-4b3f-92ee-a9c94b5687d5")
+    )
+    (fp_text user "%R"
+        (at 0 0 0)
+        (layer "F.Fab")
+        (uuid "662766f2-3cc5-4123-b993-7f2448be263d")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+        (unlocked no)
+    )
+    (fp_text user "${REFERENCE}"
+        (at 0 -4.65 0)
+        (layer "F.SilkS")
+        (uuid "44e9d2ec-ab1b-4e28-a1fe-b092b8d45863")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+        (unlocked no)
+    )
+    (pad "1" smd rect
+        (at 0.9 0.65 0)
+        (size 0.94 0.5)
+        (layers "F.Cu" "F.Paste" "F.Mask")
+        (uuid "6d2c24b2-0af0-40b6-b97f-3671b744987a")
+    )
+    (pad "2" smd rect
+        (at 0.9 -0.65 0)
+        (size 0.94 0.5)
+        (layers "F.Cu" "F.Paste" "F.Mask")
+        (uuid "108db41d-3602-4abf-b935-9447cc618048")
+    )
+    (pad "3" smd rect
+        (at -0.9 0 0)
+        (size 0.94 0.5)
+        (layers "F.Cu" "F.Paste" "F.Mask")
+        (uuid "f3ff96bb-89e9-4fb5-9108-548de43edcb1")
+    )
+    (model "${KIPRJMOD}/../../parts/TECH_PUBLIC_SI1308EDL/SOT-323-3_L2.0-W1.3-H1.0-LS2.1-P1.30.step"
+        (offset
+            (xyz 0 0 0)
+        )
+        (scale
+            (xyz 1 1 1)
+        )
+        (rotate
+            (xyz 0 0 270)
+        )
+    )
+)

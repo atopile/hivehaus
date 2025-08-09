@@ -1,0 +1,18 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component Sunlord_MCL1608S100MT_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    trait is_auto_generated<system="ato_part", source="easyeda:C51942", date="2025-08-08T22:04:15.571340+00:00", checksum="b643a732ac9195bc9a14b37b32f9be3328466cdaf1f6a38674ccde567336e9c7">
+
+    trait is_atomic_part<manufacturer="Sunlord", partnumber="MCL1608S100MT", footprint="L0603.kicad_mod", symbol="MCL1608S100MT.kicad_sym", model="L0603_L1.6-W0.8-H0.5_BEAD.step">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C51942", manufacturer="Sunlord", partno="MCL1608S100MT">
+    trait has_designator_prefix<prefix="L">
+
+    # pins
+    pin 2
+    pin 1

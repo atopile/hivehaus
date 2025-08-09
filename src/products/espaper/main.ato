@@ -1,0 +1,218 @@
+"""
+ESPHome-compatible Waveshare e-paper driver (ESP32-C3 based).
+"""
+
+#pragma experiment("BRIDGE_CONNECT")
+#pragma experiment("FOR_LOOP")
+
+import ElectricPower, SPI, ElectricLogic, Capacitor, Inductor, Diode, Electrical, Resistor, NFET
+
+from "atopile/espressif-esp32-c3/esp32_c3_mini.ato" import ESP32_C3_MINI_1_driver
+from "atopile/st-ldk220/st-ldk220.ato" import LDK220M_R
+from "atopile/usb-connectors/usb-connectors.ato" import USBCConn
+from "parts/XUNPU_FPC_05F_24PH20/XUNPU_FPC_05F_24PH20.ato" import XUNPU_FPC_05F_24PH20_package 
+
+
+module App:
+    """
+    Board-level composition: 5V input → LDO → 3V3 rail, ESP32-C3, and e-paper SPI
+    signals exposed for a Waveshare SPI e-paper panel.
+
+    Pin mapping (ESP32-C3 MINI-1 → e-paper):
+    - SCLK: GPIO10
+    - MOSI: GPIO7
+    - MISO: GPIO8 (optional, seldom used by panels)
+    - CS:   GPIO9
+    - DC:   GPIO4
+    - RST:  GPIO3
+    - BUSY: GPIO2
+    """
+
+    # --- Power rails ---
+    power_vbus = new ElectricPower
+    assert power_vbus.voltage is 5V +/- 5%
+    
+    # USB-C connector for power input
+    usb = new USBCConn
+    usb.usb2.usb_if.buspower ~ power_vbus
+
+    power_3v3 = new ElectricPower
+    assert power_3v3.voltage is 3.3V +/- 5%
+
+    # LDO regulating 5V down to 3V3
+    ldo = new LDK220M_R
+    power_vbus ~> ldo ~> power_3v3
+
+    # --- esp32 ---
+    esp32 = new ESP32_C3_MINI_1_driver
+    power_3v3 ~ esp32.power
+
+    # --- E-paper control lines ---
+    epd_dc = new ElectricLogic
+    epd_rst = new ElectricLogic
+    epd_busy = new ElectricLogic
+
+    # Reference control lines to the 3V3 rail
+    epd_dc.reference ~ power_3v3
+    epd_rst.reference ~ power_3v3
+    epd_busy.reference ~ power_3v3
+
+    # GPIO mapping chosen to be ESPHome-friendly and clear
+    esp32.gpio[4] ~ epd_dc
+    esp32.gpio[3] ~ epd_rst
+    esp32.gpio[2] ~ epd_busy
+
+    # --- E-paper FPC connector (24-pin, 0.5mm) ---
+    epd_fpc = new EPaperFPC
+    epd_fpc.power_3v3 ~ power_3v3
+
+    display_decoupling_caps = new Capacitor[10]
+    for c in display_decoupling_caps:
+        c.capacitance = 1uF +/- 20%
+        c.package = "0603"
+        assert c.max_voltage >= 20V
+
+    epd_fpc.vddio ~> display_decoupling_caps[0] ~> power_3v3.lv
+    epd_fpc.vgl.line ~> display_decoupling_caps[1] ~> power_3v3.lv
+    epd_fpc.vgh.line ~> display_decoupling_caps[2] ~> power_3v3.lv
+    epd_fpc.vdd.line ~> display_decoupling_caps[3] ~> power_3v3.lv
+    epd_fpc.vpp.line ~> display_decoupling_caps[4] ~> power_3v3.lv
+    epd_fpc.vsh.line ~> display_decoupling_caps[5] ~> power_3v3.lv
+    epd_fpc.prevgh.line ~> display_decoupling_caps[6] ~> power_3v3.lv
+    epd_fpc.vsl.line ~> display_decoupling_caps[7] ~> power_3v3.lv
+    epd_fpc.prevgl.line ~> display_decoupling_caps[8] ~> power_3v3.lv
+    epd_fpc.vcom.line ~> display_decoupling_caps[9] ~> power_3v3.lv
+
+    # --- Comms ---
+    esp32.usb_if ~ usb.usb2.usb_if
+    esp32.spi ~ epd_fpc.spi
+    esp32.gpio[9] ~ epd_fpc.spi_cs
+
+    # --- Charge Pump ---
+    sw_node = new Electrical
+
+    d_prevgh = new Diode
+    d_prevgh.lcsc_id = "C5204746"
+    sw_node ~> d_prevgh ~> epd_fpc.vgh.line
+
+    d_gnd = new Diode
+    d_gnd.lcsc_id = "C5204746"
+
+    prevgl_cap = new Capacitor
+    prevgl_cap.capacitance = 1uF +/- 20%
+    prevgl_cap.package = "0402"
+
+    d_prevgl = new Diode
+    d_prevgl.lcsc_id = "C5204746"
+    epd_fpc.prevgl.line ~> d_prevgl ~> prevgl_cap ~> sw_node
+    epd_fpc.prevgl.line ~> d_prevgl ~> d_gnd ~> power_3v3.lv
+
+    charge_pump_input_cap = new Capacitor
+    charge_pump_input_cap.capacitance = 4.7uF +/- 20%
+    charge_pump_input_cap.package = "0402"
+    power_3v3.hv ~> charge_pump_input_cap ~> power_3v3.lv
+
+    charge_pump_inductor = new Inductor
+    charge_pump_inductor.inductance = 68uH +/- 20%
+    charge_pump_inductor.package = "0805"
+    power_3v3.hv ~> charge_pump_inductor ~> sw_node
+
+    fet_source_resistor = new Resistor
+    fet_source_resistor.resistance = 0.47ohm +/- 5%
+    fet_source_resistor.package = "0402"
+
+    mosfet = new NFET
+    mosfet.lcsc_id = "C7603347"
+    mosfet.drain ~> sw_node
+    mosfet.source ~> fet_source_resistor ~> power_3v3.lv
+    mosfet.source ~> epd_fpc.rese.line
+    mosfet.gate ~> epd_fpc.gdr.line
+    
+    # --- Pull-up resistors for control signals ---
+    cs_pulldown = new Resistor
+    cs_pulldown.resistance = 10kohm +/- 10%
+    cs_pulldown.package = "0402"
+    epd_fpc.spi_cs.line ~> cs_pulldown ~> power_3v3.hv
+    
+    dc_pullup = new Resistor
+    dc_pullup.resistance = 10kohm +/- 10%
+    dc_pullup.package = "0402"
+    epd_fpc.dc.line ~> dc_pullup ~> power_3v3.hv
+    
+    rst_pullup = new Resistor
+    rst_pullup.resistance = 10kohm +/- 10%
+    rst_pullup.package = "0402"
+    epd_fpc.rst.line ~> rst_pullup ~> power_3v3.hv
+    
+    busy_pullup = new Resistor
+    busy_pullup.resistance = 10kohm +/- 10%
+    busy_pullup.package = "0402"
+    epd_fpc.busy.line ~> busy_pullup ~> power_3v3.hv
+
+    bs_pulldown = new Resistor
+    bs_pulldown.resistance = 10kohm +/- 10%
+    bs_pulldown.package = "0402"
+    epd_fpc.bs.line ~> bs_pulldown ~> power_3v3.lv
+
+    gdr_pulldown = new Resistor
+    gdr_pulldown.resistance = 10kohm +/- 10%
+    gdr_pulldown.package = "0402"
+    epd_fpc.gdr.line ~> gdr_pulldown ~> power_3v3.lv
+
+
+module EPaperFPC:
+    package = new XUNPU_FPC_05F_24PH20_package
+    power_3v3 = new ElectricPower
+
+    spi = new SPI
+    spi_cs = new ElectricLogic
+
+    hlt_ctl = new ElectricLogic
+    gdr = new ElectricLogic
+    rese = new ElectricLogic
+    vgl = new ElectricLogic
+    vgh = new ElectricLogic
+    tscl = new ElectricLogic
+    tsda = new ElectricLogic
+    bs = new ElectricLogic
+    busy = new ElectricLogic
+    rst = new ElectricLogic
+    dc = new ElectricLogic
+    # cs
+    # sclk
+    # sdi
+    vddio = new Electrical
+    # vci
+    # vss
+    vdd = new ElectricLogic
+    vpp = new ElectricLogic
+    vsh = new ElectricLogic
+    prevgh = new ElectricLogic
+    vsl = new ElectricLogic
+    prevgl = new ElectricLogic
+    vcom = new ElectricLogic
+
+    package.1 ~ hlt_ctl.line
+    package.2 ~ gdr.line
+    package.3 ~ rese.line
+    package.4 ~ vgl.line
+    package.5 ~ vgh.line
+    package.6 ~ tscl.line
+    package.7 ~ tsda.line
+    package.8 ~ bs.line
+    package.9 ~ busy.line
+    package.10 ~ rst.line
+    package.11 ~ dc.line
+    package.12 ~ spi_cs.line
+    package.13 ~ spi.sclk.line
+    package.14 ~ spi.mosi.line
+    package.15 ~ vddio
+    package.16 ~ power_3v3.hv
+    package.17 ~ power_3v3.lv
+    package.18 ~ vdd.line
+    package.19 ~ vpp.line
+    package.20 ~ vsh.line
+    package.21 ~ prevgh.line
+    package.22 ~ vsl.line
+    package.23 ~ prevgl.line
+    package.24 ~ vcom.line

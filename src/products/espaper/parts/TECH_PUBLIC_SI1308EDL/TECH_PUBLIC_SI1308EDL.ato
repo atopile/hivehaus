@@ -1,0 +1,19 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component TECH_PUBLIC_SI1308EDL_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    trait is_auto_generated<system="ato_part", source="easyeda:C7603347", date="2025-08-08T23:25:46.097886+00:00", checksum="72250eeaed3a6a20047041d8f3dc03ddf9abc3b5bf380d035fb9b7417787496f">
+
+    trait is_atomic_part<manufacturer="TECH PUBLIC", partnumber="SI1308EDL", footprint="SOT-323-3_L2.0-W1.3-P1.30-LS2.1-BR.kicad_mod", symbol="SI1308EDL_C7603347.kicad_sym", model="SOT-323-3_L2.0-W1.3-H1.0-LS2.1-P1.30.step">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C7603347", manufacturer="TECH PUBLIC", partno="SI1308EDL">
+    trait has_designator_prefix<prefix="Q">
+
+    # pins
+    signal D ~ pin 3
+    signal G ~ pin 1
+    signal S ~ pin 2

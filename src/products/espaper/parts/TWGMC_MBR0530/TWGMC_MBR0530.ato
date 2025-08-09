@@ -1,0 +1,18 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component TWGMC_MBR0530_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    trait is_auto_generated<system="ato_part", source="easyeda:C5204746", date="2025-08-08T23:25:44.673837+00:00", checksum="79dad0effa63921d49098e1b4c7fd6733bb1d06ea37097394abef1b1f44ffe28">
+
+    trait is_atomic_part<manufacturer="TWGMC", partnumber="MBR0530", footprint="SOD-123_L2.7-W1.6-LS3.7-RD-1.kicad_mod", symbol="MBR0530_C5204746.kicad_sym", model="SOD-123_L2.7-W1.6-LS3.7-RD-1.step">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C5204746", manufacturer="TWGMC", partno="MBR0530">
+    trait has_designator_prefix<prefix="U">
+
+    # pins
+    signal A ~ pin 2
+    signal K ~ pin 1

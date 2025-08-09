@@ -1,0 +1,42 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component XUNPU_FPC_05F_24PH20_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    trait is_auto_generated<system="ato_part", source="easyeda:C2856805", date="2025-08-08T22:14:25.989717+00:00", checksum="dcacb6e7a06c732de4c600a09da4a0c3a6351ab5f96077336b65d03257da4a5d">
+
+    trait is_atomic_part<manufacturer="XUNPU", partnumber="FPC-05F-24PH20", footprint="FPC-SMD_24P-P0.50_FPC-05F-24PH20.kicad_mod", symbol="FPC-05F-24PH20.kicad_sym", model="FPC-SMD_24P-P0.50_FPC-05F-24PH20.STEP">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C2856805", manufacturer="XUNPU", partno="FPC-05F-24PH20">
+    trait has_designator_prefix<prefix="FPC">
+
+    # pins
+    pin 1
+    pin 2
+    pin 3
+    pin 4
+    pin 5
+    pin 6
+    pin 7
+    pin 8
+    pin 9
+    pin 10
+    pin 11
+    pin 12
+    pin 13
+    pin 14
+    pin 15
+    pin 16
+    pin 17
+    pin 18
+    pin 19
+    pin 20
+    pin 21
+    pin 22
+    pin 23
+    pin 24
+    pin 25
+    pin 26
