@@ -1,0 +1,34 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+import LED
+
+
+component Lite_On_LTST_C191KGKT_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    #trait is_auto_generated<system="ato_part", source="easyeda:C125098", date="2025-08-09T00:19:45.983317+00:00", checksum="ca6421f1f92b9c2cf6b274fa461974de687b3a97fa11905dafcf2bda1bc7ae38">
+
+    trait is_atomic_part<manufacturer="Lite-On", partnumber="LTST-C191KGKT", footprint="LED0603-RD.kicad_mod", symbol="LTST-C191KGKT.kicad_sym", model="LED0603-RD-YELLOW.STEP">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C125098", manufacturer="Lite-On", partno="LTST-C191KGKT">
+    trait has_designator_prefix<prefix="LED">
+
+    # pins
+    signal neg ~ pin 1
+    signal pos ~ pin 2
+
+module Lite_On_LTST_C191KGKT_model from LED:
+    """
+    Module for Lite-On LTST-C191KGKT LED
+    """
+    led = new Lite_On_LTST_C191KGKT_package
+
+    forward_voltage = 2V +/- 0.2V
+    current = 2mA +/- 0.5mA
+    color = "YELLOW"
+    package = "0603"
+
+    anode ~ led.pos
+    cathode ~ led.neg
