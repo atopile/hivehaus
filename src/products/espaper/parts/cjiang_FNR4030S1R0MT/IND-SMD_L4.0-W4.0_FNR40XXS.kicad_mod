@@ -1,0 +1,124 @@
+(footprint "cjiang_FNR4030S1R0MT:IND-SMD_L4.0-W4.0_FNR40XXS"
+    (layer "F.Cu")
+    (descr "")
+    (version 20241229)
+    (generator "faebryk")
+    (generator_version "v5")
+    (tedit "5DC5F6A4")
+    (property "Reference" "REF**"
+        (at 0 -4 0)
+        (layer "F.SilkS")
+        (hide no)
+        (uuid "766e7847-ccc7-41f1-b6cd-3435c85deb4a")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+    )
+    (property "Value" "IND-SMD_L4.0-W4.0_FNR40XXS"
+        (at 0 4 0)
+        (layer "F.Fab")
+        (hide no)
+        (uuid "697c38c5-ce38-41fb-b046-2526bda30b33")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+    )
+    (property "checksum" "bf9b0dbfc00bd64e5148ee74381fd7e4b615c7653f994f73d125fd61092774a3"
+        (at 0 0 0)
+        (layer "User.9")
+        (hide no)
+        (uuid "8dbfda73-6891-490b-b852-88a6da12329d")
+        (effects
+            (font
+                (size 0.125 0.125)
+                (thickness 0.01875)
+            )
+            (hide yes)
+        )
+    )
+    (attr smd)
+    (fp_line
+        (start -2 -2.1)
+        (end 2 -2.1)
+        (stroke
+            (width 0.2)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "42c13dcf-3733-4812-874e-d8bb11de9bb2")
+    )
+    (fp_line
+        (start -2 2.1)
+        (end 2 2.1)
+        (stroke
+            (width 0.2)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "083f68bd-c907-4e6c-9e3e-e53aa765ffa4")
+    )
+    (fp_circle
+        (center -2 2)
+        (end -1.97 2)
+        (stroke
+            (width 0.06)
+            (type solid)
+        )
+        (fill no)
+        (layer "F.Fab")
+        (uuid "eab67eb1-d374-439f-b79e-53e3b1d5c317")
+    )
+    (fp_text user "%R"
+        (at 0 0 0)
+        (layer "F.Fab")
+        (uuid "9d2603ba-725c-4013-b9b0-56e2da65f6d2")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+        (unlocked no)
+    )
+    (fp_text user "${REFERENCE}"
+        (at 0 -4 0)
+        (layer "F.SilkS")
+        (uuid "766e7847-ccc7-41f1-b6cd-3435c85deb4a")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+        (unlocked no)
+    )
+    (pad "1" smd rect
+        (at -1.5 0 0)
+        (size 1.6 3.9)
+        (layers "F.Cu" "F.Paste" "F.Mask")
+        (uuid "ab9569ca-f81b-4187-8edf-d19206e09ee5")
+    )
+    (pad "2" smd rect
+        (at 1.5 0 0)
+        (size 1.6 3.9)
+        (layers "F.Cu" "F.Paste" "F.Mask")
+        (uuid "4bbc2a04-77ff-4544-97ee-3b1a945aa7a5")
+    )
+    (model "${KIPRJMOD}/../../parts/cjiang_FNR4030S1R0MT/IND-SMD_L4.0-W4.0-H2.6_FNR40XXS.step"
+        (offset
+            (xyz 0 0 0)
+        )
+        (scale
+            (xyz 1 1 1)
+        )
+        (rotate
+            (xyz 0 0 90)
+        )
+    )
+)

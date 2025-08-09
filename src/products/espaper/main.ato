@@ -11,6 +11,9 @@ from "atopile/espressif-esp32-c3/esp32_c3_mini.ato" import ESP32_C3_MINI_1_drive
 from "atopile/st-ldk220/st-ldk220.ato" import LDK220M_R
 from "atopile/usb-connectors/usb-connectors.ato" import USBCConn
 from "parts/XUNPU_FPC_05F_24PH20/XUNPU_FPC_05F_24PH20.ato" import XUNPU_FPC_05F_24PH20_package 
+from "atopile/batteries/eemb_battery_lp402535.ato" import EMB_BATTERY_LP402535_Example
+from "atopile/ti-bq25185/ti-bq25185.ato" import BQ25185_driver
+from "atopile/ti-tps63020/ti-tps63020.ato" import TPS63020_driver
 
 
 module App:
@@ -28,39 +31,73 @@ module App:
     - BUSY: GPIO2
     """
 
-    # --- Power rails ---
+    # --- Power Rails ---
     power_vbus = new ElectricPower
+    """
+    USB Connection power input
+    """
     assert power_vbus.voltage is 5V +/- 5%
-    
-    # USB-C connector for power input
-    usb = new USBCConn
-    usb.usb2.usb_if.buspower ~ power_vbus
 
     power_3v3 = new ElectricPower
+    """
+    ESP32-C3 and epaper panel input voltage
+    """
     assert power_3v3.voltage is 3.3V +/- 5%
 
-    # LDO regulating 5V down to 3V3
-    ldo = new LDK220M_R
-    power_vbus ~> ldo ~> power_3v3
+    # --- Power Components ---
+    usb = new USBCConn
+    """
+    USB C Connector for power input and usb comms to the ESP32-C3
+    """
+    usb.usb2.usb_if.buspower ~ power_vbus
 
+    battery = new EMB_BATTERY_LP402535_Example
+    """
+    Small Lipo battery for extended runtime with epaper panel
+    """
+    battery.battery.model.capacity = 300mAh
+    assert battery.battery.model.voltage is 3V to 4.2V
+
+    charger = new BQ25185_driver
+    """
+    BQ25185 charger for the battery. Has power path to forward the usb power to load if connected.
+    """
+    charger.charge_current_limit = battery.battery.model.capacity / 2h +/- 10%
+    charger.input_current_limit = 500mA
+    assert charger.battery_voltage_limit_high is 4.2V
+    assert charger.battery_voltage_limit_low is 3.0V
+    temp_sensor = new Resistor
+    temp_sensor.resistance = 10kohm +/- 10%
+    temp_sensor.package = "0402"
+    charger.temperature_sense_manual_reset_control.line ~> temp_sensor ~> power_3v3.gnd
+
+    buck_boost = new TPS63020_driver
+    """
+    TPS63020 buck-boost regulator, will be supplied with either the USB or the battery
+    """
+    buck_boost.v_out = 3.3V +/- 5%
+
+    # --- Power Connections ---
+    usb.usb2.usb_if.buspower ~> charger ~> battery.power_battery
+    charger.power_sys ~> buck_boost ~> power_3v3
+    
     # --- esp32 ---
     esp32 = new ESP32_C3_MINI_1_driver
     power_3v3 ~ esp32.power
-
+    
     # --- E-paper control lines ---
     epd_dc = new ElectricLogic
-    epd_rst = new ElectricLogic
-    epd_busy = new ElectricLogic
-
-    # Reference control lines to the 3V3 rail
     epd_dc.reference ~ power_3v3
+    epd_rst = new ElectricLogic
     epd_rst.reference ~ power_3v3
+    epd_busy = new ElectricLogic
     epd_busy.reference ~ power_3v3
 
-    # GPIO mapping chosen to be ESPHome-friendly and clear
-    esp32.gpio[4] ~ epd_dc
-    esp32.gpio[3] ~ epd_rst
-    esp32.gpio[2] ~ epd_busy
+    # USB input capacitor
+    input_cap = new Capacitor
+    input_cap.capacitance = 4.7uF +/- 20%
+    input_cap.package = "0603"
+    power_vbus.hv ~> input_cap ~> power_vbus.lv
 
     # --- E-paper FPC connector (24-pin, 0.5mm) ---
     epd_fpc = new EPaperFPC
@@ -86,16 +123,24 @@ module App:
     # --- Comms ---
     esp32.usb_if ~ usb.usb2.usb_if
     esp32.spi ~ epd_fpc.spi
-    esp32.gpio[9] ~ epd_fpc.spi_cs
+    esp32.gpio[12] ~ epd_fpc.spi_cs
+
+    esp32.gpio[4] ~ epd_dc
+    esp32.gpio[3] ~ epd_rst
+    esp32.gpio[2] ~ epd_busy
+    
+    epd_dc ~ epd_fpc.dc.line
+    epd_rst ~ epd_fpc.rst.line
+    epd_busy ~ epd_fpc.busy.line
 
     # --- Charge Pump ---
     sw_node = new Electrical
 
     d_prevgh = new Diode
     d_prevgh.lcsc_id = "C5204746"
-    sw_node ~> d_prevgh ~> epd_fpc.vgh.line
+    sw_node ~> d_prevgh ~> epd_fpc.prevgh.line
 
-    d_gnd = new Diode
+    d_gnd = new Diode  # D3 in schematic
     d_gnd.lcsc_id = "C5204746"
 
     prevgl_cap = new Capacitor
@@ -107,6 +152,7 @@ module App:
     epd_fpc.prevgl.line ~> d_prevgl ~> prevgl_cap ~> sw_node
     epd_fpc.prevgl.line ~> d_prevgl ~> d_gnd ~> power_3v3.lv
 
+    # C8 (475) and C3 (104) per schematic
     charge_pump_input_cap = new Capacitor
     charge_pump_input_cap.capacitance = 4.7uF +/- 20%
     charge_pump_input_cap.package = "0402"
@@ -132,7 +178,7 @@ module App:
     cs_pulldown = new Resistor
     cs_pulldown.resistance = 10kohm +/- 10%
     cs_pulldown.package = "0402"
-    epd_fpc.spi_cs.line ~> cs_pulldown ~> power_3v3.hv
+    epd_fpc.spi_cs.line ~> cs_pulldown ~> power_3v3.lv
     
     dc_pullup = new Resistor
     dc_pullup.resistance = 10kohm +/- 10%
@@ -150,7 +196,7 @@ module App:
     epd_fpc.busy.line ~> busy_pullup ~> power_3v3.hv
 
     bs_pulldown = new Resistor
-    bs_pulldown.resistance = 10kohm +/- 10%
+    bs_pulldown.resistance = 3.3ohm +/- 5%  # R7 in schematic
     bs_pulldown.package = "0402"
     epd_fpc.bs.line ~> bs_pulldown ~> power_3v3.lv
 
@@ -191,6 +237,27 @@ module EPaperFPC:
     vsl = new ElectricLogic
     prevgl = new ElectricLogic
     vcom = new ElectricLogic
+
+    hlt_ctl.reference ~ power_3v3
+    gdr.reference ~ power_3v3
+    rese.reference ~ power_3v3
+    vgl.reference ~ power_3v3
+    vgh.reference ~ power_3v3
+    tscl.reference ~ power_3v3
+    tsda.reference ~ power_3v3
+    bs.reference ~ power_3v3
+    busy.reference ~ power_3v3
+    rst.reference ~ power_3v3
+    dc.reference ~ power_3v3
+    spi_cs.reference ~ power_3v3
+    spi.reference_shim ~ power_3v3
+    vdd.reference ~ power_3v3
+    vpp.reference ~ power_3v3
+    vsh.reference ~ power_3v3
+    prevgh.reference ~ power_3v3
+    vsl.reference ~ power_3v3
+    prevgl.reference ~ power_3v3
+    vcom.reference ~ power_3v3
 
     package.1 ~ hlt_ctl.line
     package.2 ~ gdr.line

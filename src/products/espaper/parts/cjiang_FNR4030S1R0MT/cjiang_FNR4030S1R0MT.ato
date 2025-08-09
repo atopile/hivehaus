@@ -1,0 +1,18 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component cjiang_FNR4030S1R0MT_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    trait is_auto_generated<system="ato_part", source="easyeda:C167865", date="2025-08-09T01:12:17.440706+00:00", checksum="21846bbcc0fe729ad7b1935cadd7ad589b16e973238300f954b617f85dfa0465">
+
+    trait is_atomic_part<manufacturer="cjiang", partnumber="FNR4030S1R0MT", footprint="IND-SMD_L4.0-W4.0_FNR40XXS.kicad_mod", symbol="FNR4030S1R0MT.kicad_sym", model="IND-SMD_L4.0-W4.0-H2.6_FNR40XXS.step">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C167865", manufacturer="cjiang", partno="FNR4030S1R0MT">
+    trait has_designator_prefix<prefix="L">
+
+    # pins
+    pin 2
+    pin 1
