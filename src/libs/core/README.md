@@ -39,7 +39,7 @@ The Hivehaus Core is a reusable ato library module that products import to get t
   - RESET button (EN pin)
 - **LEDs**:
   - Power LED (connected directly to 3.3V rail with resistor)
-  - Status LED (I2C RGB controller on shared I2C bus, address 0x60)
+  - Status LED (SK6805 addressable RGB LED with data line on GPIO9, exposed on HiveIO.led_data)
 
 ### 4. Debug & Programming
 - **USB Serial/JTAG**: Built-in ESP32-C3 USB controller (no external chip needed)
@@ -61,6 +61,7 @@ The Hivehaus Core is a reusable ato library module that products import to get t
   - GPIO2: ADC capable, general IO (boot strap pin)
   - GPIO3: ADC capable, general IO
   - GPIO4: ADC capable, general IO
+  - LED Data (GPIO9): Data output from addressable RGB LED (can be chained or reassigned)
 - **HiveExpansion Connector**:
   - STEMMA QT / Qwiic compatible (same as Adafruit/SparkFun standard)
   - I2C interface (connected to shared I2C bus from HiveIO)
@@ -81,7 +82,7 @@ The Hivehaus Core is a reusable ato library module that products import to get t
 | GPIO6 | I2C SCL | ✅ i2c | IO6 | I2C default, JTAG TCK |
 | GPIO7 | SPI MOSI | ✅ spi | IO7 | SPI default, JTAG TDO |
 | GPIO8 | SPI MISO | ✅ spi | IO8 | SPI default, Boot strap |
-| GPIO9 | BOOT Button | ❌ Core | IO9 | Boot mode select |
+| GPIO9 | RGB LED Data | ✅ led_data | IO9 | Addressable LED data out |
 | GPIO10 | SPI SCLK | ✅ spi | IO10 | SPI default |
 | GPIO11-17 | Not Available | ❌ | - | Internal SPI Flash |
 | GPIO18 | USB D- | ❌ Core | IO18 | USB_D- |

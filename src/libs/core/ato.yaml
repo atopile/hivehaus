@@ -7,6 +7,8 @@ paths:
 builds:
   default:
     entry: main.ato:Core
+  ams1117:
+    entry: parts/Advanced_Monolithic_Systems_AMS1117_3_3/Advanced_Monolithic_Systems_AMS1117_3_3.ato:Advanced_Monolithic_Systems_AMS1117_3_3_driver
 
 # This metadata is only required for publishing
 # Uncomment it and fill out the fields to publish your package
@@ -25,3 +27,18 @@ dependencies:
 - type: registry
   identifier: atopile/espressif-esp32-c3
   release: 0.1.4
+- type: registry
+  identifier: atopile/usb-connectors
+  release: 0.3.0
+- type: registry
+  identifier: atopile/awinic-aw9523
+  release: 0.1.0
+- type: registry
+  identifier: atopile/stemma-connectors
+  release: 0.1.5
+- type: registry
+  identifier: atopile/addressable-leds
+  release: 0.2.6
+- type: registry
+  identifier: atopile/saleae-header
+  release: 0.2.0

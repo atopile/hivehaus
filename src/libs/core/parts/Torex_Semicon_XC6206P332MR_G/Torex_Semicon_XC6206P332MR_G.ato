@@ -1,0 +1,19 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component Torex_Semicon_XC6206P332MR_G_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    trait is_auto_generated<system="ato_part", source="easyeda:C5446", date="2025-08-08T23:02:54.537434+00:00", checksum="ad68962d4994a755a08cda40eccee7fa7877d860f04946add988fb3b1d0b3ed7">
+
+    trait is_atomic_part<manufacturer="Torex Semicon", partnumber="XC6206P332MR-G", footprint="SOT-23-3_L2.9-W1.6-P1.90-LS2.8-BR.kicad_mod", symbol="XC6206P332MR.kicad_sym", model="SOT-23-3L_L2.9-W1.6-H1.1-LS2.8-P0.95.step">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C5446", manufacturer="Torex Semicon", partno="XC6206P332MR-G">
+    trait has_designator_prefix<prefix="U">
+
+    # pins
+    signal GND ~ pin 1
+    signal Vin ~ pin 2
+    signal Vout ~ pin 3

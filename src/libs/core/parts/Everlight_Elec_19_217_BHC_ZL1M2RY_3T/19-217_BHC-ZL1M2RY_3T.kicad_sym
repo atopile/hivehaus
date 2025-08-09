@@ -1,0 +1,199 @@
+(kicad_symbol_lib
+    (version 1)
+    (generator "faebryk")
+    (symbol "19-217_BHC-ZL1M2RY_3T"
+        (property "Reference" "LED"
+            (id 0)
+            (at 0 3.3 0)
+            (effects
+                (font
+                    (size 1.27 1.27)
+                )
+                (hide no)
+            )
+        )
+        (property "Value" "19-217/BHC-ZL1M2RY/3T"
+            (id 1)
+            (at 0 -6.86 0)
+            (effects
+                (font
+                    (size 1.27 1.27)
+                )
+                (hide no)
+            )
+        )
+        (property "Footprint" "C72041:LED0603-FD_BLUE"
+            (id 2)
+            (at 0 -9.4 0)
+            (effects
+                (font
+                    (size 1.27 1.27)
+                )
+                (hide yes)
+            )
+        )
+        (property "Datasheet" "https://lcsc.com/product-detail/Light-Emitting-Diodes-LED_0603-Blue-light_C72041.html"
+            (id 3)
+            (at 0 -11.94 0)
+            (effects
+                (font
+                    (size 1.27 1.27)
+                )
+                (hide yes)
+            )
+        )
+        (property "LCSC Part" "C72041"
+            (id 5)
+            (at 0 -14.48 0)
+            (effects
+                (font
+                    (size 1.27 1.27)
+                )
+                (hide yes)
+            )
+        )
+        (property "checksum" "5feb492475be3fd871313b3579f4c9c58aac3b0c862dcc07e9a89e35e208756d"
+            (at 0 0 0)
+            (effects
+                (font
+                    (size 0 0)
+                )
+                (hide yes)
+            )
+        )
+        (in_bom yes)
+        (on_board yes)
+        (symbol "19-217_BHC-ZL1M2RY_3T_0_1"
+            (polyline
+                (stroke
+                    (width 0)
+                    (type default)
+                    (color 0 0 0 0)
+                )
+                (fill
+                    (type none)
+                )
+                (pts
+                    (xy -1.02 0.51)
+                    (xy -2.79 2.29)
+                )
+            )
+            (polyline
+                (stroke
+                    (width 0)
+                    (type default)
+                    (color 0 0 0 0)
+                )
+                (fill
+                    (type none)
+                )
+                (pts
+                    (xy -2.03 -0.51)
+                    (xy -3.81 1.27)
+                )
+            )
+            (polyline
+                (stroke
+                    (width 0)
+                    (type default)
+                    (color 0 0 0 0)
+                )
+                (fill
+                    (type none)
+                )
+                (pts
+                    (xy -1.27 -3.3)
+                    (xy -1.27 -0.25)
+                )
+            )
+            (polyline
+                (stroke
+                    (width 0)
+                    (type default)
+                    (color 0 0 0 0)
+                )
+                (fill
+                    (type background)
+                )
+                (pts
+                    (xy 1.27 -0.25)
+                    (xy -1.27 -1.78)
+                    (xy 1.27 -3.3)
+                    (xy 1.27 -0.25)
+                )
+            )
+            (polyline
+                (stroke
+                    (width 0)
+                    (type default)
+                    (color 0 0 0 0)
+                )
+                (fill
+                    (type background)
+                )
+                (pts
+                    (xy -2.79 2.29)
+                    (xy -2.29 1.27)
+                    (xy -1.78 1.78)
+                    (xy -2.79 2.29)
+                )
+            )
+            (polyline
+                (stroke
+                    (width 0)
+                    (type default)
+                    (color 0 0 0 0)
+                )
+                (fill
+                    (type background)
+                )
+                (pts
+                    (xy -3.81 1.27)
+                    (xy -3.3 0.25)
+                    (xy -2.79 0.76)
+                    (xy -3.81 1.27)
+                )
+            )
+            (pin input line
+                (at 5.08 -1.78 180)
+                (length 3.81)
+                (name "A"
+                    (effects
+                        (font
+                            (size 1.27 1.27)
+                        )
+                        (hide no)
+                    )
+                )
+                (number "2"
+                    (effects
+                        (font
+                            (size 1.27 1.27)
+                        )
+                        (hide no)
+                    )
+                )
+            )
+            (pin input line
+                (at -5.08 -1.78 0)
+                (length 3.81)
+                (name "C"
+                    (effects
+                        (font
+                            (size 1.27 1.27)
+                        )
+                        (hide no)
+                    )
+                )
+                (number "1"
+                    (effects
+                        (font
+                            (size 1.27 1.27)
+                        )
+                        (hide no)
+                    )
+                )
+            )
+        )
+    )
+)

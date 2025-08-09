@@ -1,0 +1,18 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component Rubycon_35YXJ100M6_3X11_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    trait is_auto_generated<system="ato_part", source="easyeda:C88754", date="2025-08-08T23:03:52.441326+00:00", checksum="c97344e2d0f3f5bcc1a3c809678f10181621dd808a4c9a56000a06402555ce28">
+
+    trait is_atomic_part<manufacturer="Rubycon", partnumber="35YXJ100M6.3X11", footprint="CAP-TH_BD6.3-P2.50-D1.0-FD.kicad_mod", symbol="35YXJ100M6.3X11.kicad_sym", model="CAP-TH_BD6.3-P2.50-D1.0-FD.step">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C88754", manufacturer="Rubycon", partno="35YXJ100M6.3X11">
+    trait has_designator_prefix<prefix="C">
+
+    # pins
+    pin 1
+    pin 2

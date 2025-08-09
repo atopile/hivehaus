@@ -1,4 +1,147 @@
+#pragma experiment("BRIDGE_CONNECT")
+#pragma experiment("FOR_LOOP")
+#pragma experiment("TRAITS")
+
+import ElectricPower
+import ElectricLogic
+import Electrical
+import Capacitor
+import Resistor
+import I2C
+import SPI
+import UART
+import USB2_0
+import can_bridge
+import LEDIndicator
+
+from "interfaces.ato" import HiveIO, HiveExpansion
+from "power.ato" import HiveCorePowerSupply, DefaultPowerSupply
 from "atopile/espressif-esp32-c3/esp32_c3_mini.ato" import ESP32_C3_MINI_1_driver
+from "atopile/usb-connectors/usb-connectors.ato" import USB2_0TypeCHorizontalConnector
+from "atopile/addressable-leds/sk6805-ec20.ato" import SK6805EC20_driver
+from "atopile/stemma-connectors/main.ato" import StemmaQTVertical
+from "parts/Lite_On_LTST_C191KGKT/Lite_On_LTST_C191KGKT.ato" import Lite_On_LTST_C191KGKT_model
+from "atopile/saleae-header/saleae-header.ato" import SaleaeHeaderRightAngle_2
+
+module PoweredLED:
+    power = new ElectricPower
+    assert power.voltage within 3.3V +/- 5%
+    led = new Lite_On_LTST_C191KGKT_model
+    current_limiting_resistor = new Resistor
+    current_limiting_resistor.resistance = 1kohm +/- 5%
+    current_limiting_resistor.package = "0402"
+    power.hv ~> current_limiting_resistor ~> led ~> power.lv
+
 
 module Core:
+    """
+    Hivehaus Core - Standard ESP32-C3 foundation for all smart home products.
+    
+    Features:
+    - ESP32-C3-MINI-1 module with WiFi/BLE
+    - USB-C connector for programming and power
+    - Retypeable power supply architecture
+    - HiveIO interface for product peripherals
+    - HiveExpansion STEMMA QT/Qwiic connector
+    - Addressable RGB status LED with data exposed on HiveIO
+    """
+    
+    # ===== External Interfaces =====
+    # Power rails (outputs from power_supply)
+    power_5v = new ElectricPower
+    power_3v3 = new ElectricPower
+    assert power_3v3.voltage within 3.3V +/- 5%
+    assert power_5v.voltage within 5V +/- 5%
+    
+    # Product interfaces
+    hiveio = new HiveIO
+    expansion = new HiveExpansion
+    
+    # External
+    stemma_qt = new StemmaQTVertical
+    debug_header = new SaleaeHeaderRightAngle_2
+    
+    # ===== Core Components =====
+    # Microcontroller
     mcu = new ESP32_C3_MINI_1_driver
+    
+    # USB-C connector (always present for programming/power)
+    usb = new USB2_0TypeCHorizontalConnector
+    
+    # Power supply module (retypeable by products)
+    power_supply = new DefaultPowerSupply
+    
+    # UI
+    rgb_led = new SK6805EC20_driver
+    power_led = new PoweredLED
+    
+    
+    # ===== Power Architecture =====
+    # USB-C to power supply
+    usb.usb.usb_if.buspower ~ power_supply.vbus_in
+    
+    # Power supply outputs
+    power_supply.power_5v ~ power_5v
+    power_supply.power_3v3 ~ power_3v3
+    
+    # Power distribution
+    power_3v3 ~ mcu.power
+    power_3v3 ~ rgb_led.power
+    power_3v3 ~ power_led.power
+    
+    # ===== USB Data Connections =====
+    # USB connection to ESP32-C3 (built-in USB controller)
+    usb.usb.usb_if ~ mcu.usb_if
+    
+    # ===== HiveIO Interface Connections =====
+    # I2C bus
+    mcu.i2c ~ hiveio.i2c
+    hiveio.i2c.frequency = 100kHz +/- 10kHz
+    
+    # Add I2C pull-up resistors
+    i2c_pullups = new Resistor[2]
+    for res in i2c_pullups:
+        res.resistance = 4.7kohm +/- 5%
+        res.package = "R0402"
+    hiveio.i2c.sda.reference.hv ~> i2c_pullups[0] ~> hiveio.i2c.sda.line
+    hiveio.i2c.scl.reference.hv ~> i2c_pullups[1] ~> hiveio.i2c.scl.line
+    
+    # SPI bus (using package defaults)
+    mcu.spi ~ hiveio.spi
+    
+    # UART bus (using package defaults)
+    mcu.uart[0] ~ hiveio.uart
+    
+    # Flexible GPIOs (all ADC capable)
+    mcu.gpio[0] ~ hiveio.io0
+    mcu.gpio[1] ~ hiveio.io1
+    mcu.gpio[2] ~ hiveio.io2
+    mcu.gpio[3] ~ hiveio.io3
+    mcu.gpio[4] ~ hiveio.io4
+    
+    # Addressable LED data line (GPIO9)
+    mcu.gpio[9] ~ rgb_led.data_in
+    rgb_led.data_out ~ hiveio.led_data
+    
+    # Power reference for HiveIO
+    power_3v3 ~ hiveio.power
+    
+    
+    # ===== HiveExpansion Connector =====
+    # STEMMA QT/Qwiic compatible I2C expansion
+    expansion.i2c ~ hiveio.i2c
+    expansion.power ~ power_3v3
+    
+    # Connect to STEMMA QT connector
+    stemma_qt.i2c ~ expansion.i2c
+    stemma_qt.power ~ expansion.power
+
+    # HiveIO
+    debug_header.headers[0].channels[0] ~ hiveio.i2c.sda
+    debug_header.headers[0].channels[1] ~ hiveio.i2c.scl
+    debug_header.headers[0].channels[2] ~ hiveio.led_data
+    debug_header.headers[0].channels[3] ~ hiveio.io0
+
+    # power/core
+    debug_header.headers[1].channels[0].line ~ power_3v3.hv
+    debug_header.headers[1].channels[1].line ~ power_5v.hv
