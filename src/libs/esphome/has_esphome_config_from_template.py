@@ -9,6 +9,9 @@ import yaml
 
 import faebryk.library._F as F
 from faebryk.libs.util import dict_value_visitor
+from yaml.constructor import ConstructorError
+
+SUBST_RE = re.compile(r"^\{\{(.*)\}\}$")
 
 
 class has_esphome_config_from_template(F.has_esphome_config.impl()):
@@ -53,12 +56,15 @@ class has_esphome_config_from_template(F.has_esphome_config.impl()):
             for p in GraphFunctions(self.get_graph()).nodes_of_type(Parameter)
         }
 
-        config = yaml.safe_load(self.path.read_text()) or {}
+        try:
+            config = yaml.safe_load(self.path.read_text()) or {}
+        except (yaml.YAMLError, ConstructorError) as e:
+            raise ValueError(f"Error parsing YAML file: {e}") from e
 
         def sub_param(v: Any) -> Any:
             # TODO: this is fragile
-            if isinstance(v, str) and (match := re.match(r"^\{\{(.*)\}\}$", v)):
-                return params[match.group(1)]
+            if isinstance(v, str) and (match := SUBST_RE.match(v)):
+                return params[match.group(1).strip()]
 
             return v
 
