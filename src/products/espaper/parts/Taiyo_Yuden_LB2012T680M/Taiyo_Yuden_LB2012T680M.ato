@@ -1,0 +1,18 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component Taiyo_Yuden_LB2012T680M_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    trait is_auto_generated<system="ato_part", source="easyeda:C223256", date="2025-08-22T17:39:32.824089+00:00", checksum="8f307e8ee88c7ea587f14b4da312a9728e156b6c6ad302b07824a1b7bd1bb00d">
+
+    trait is_atomic_part<manufacturer="Taiyo Yuden", partnumber="LB2012T680M", footprint="L0805.kicad_mod", symbol="LB2012T680M.kicad_sym", model="R0805_L2.0-W1.3-H0.6.step">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C223256", manufacturer="Taiyo Yuden", partno="LB2012T680M">
+    trait has_designator_prefix<prefix="L">
+
+    # pins
+    pin 2
+    pin 1

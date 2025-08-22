@@ -14,21 +14,15 @@ from "parts/XUNPU_FPC_05F_24PH20/XUNPU_FPC_05F_24PH20.ato" import XUNPU_FPC_05F_
 from "atopile/batteries/eemb_battery_lp402535.ato" import EMB_BATTERY_LP402535_Example
 from "atopile/ti-bq25185/ti-bq25185.ato" import BQ25185_driver
 from "atopile/ti-tps63020/ti-tps63020.ato" import TPS63020_driver
+from "atopile/logos/logos.ato" import atopile_logo_4x4mm
+from "atopile/indicator-leds/indicator-leds.ato" import LEDIndicatorBlue
+from "atopile/indicator-leds/indicator-leds.ato" import LEDIndicatorRed
 
 
 module App:
     """
     Board-level composition: 5V input → LDO → 3V3 rail, ESP32-C3, and e-paper SPI
     signals exposed for a Waveshare SPI e-paper panel.
-
-    Pin mapping (ESP32-C3 MINI-1 → e-paper):
-    - SCLK: GPIO10
-    - MOSI: GPIO7
-    - MISO: GPIO8 (optional, seldom used by panels)
-    - CS:   GPIO9
-    - DC:   GPIO4
-    - RST:  GPIO3
-    - BUSY: GPIO2
     """
 
     # --- Power Rails ---
@@ -129,9 +123,9 @@ module App:
     esp32.gpio[3] ~ epd_rst
     esp32.gpio[2] ~ epd_busy
     
-    epd_dc ~ epd_fpc.dc.line
-    epd_rst ~ epd_fpc.rst.line
-    epd_busy ~ epd_fpc.busy.line
+    epd_dc ~ epd_fpc.dc
+    epd_rst ~ epd_fpc.rst
+    epd_busy ~ epd_fpc.busy
 
     # --- Charge Pump ---
     sw_node = new Electrical
@@ -175,10 +169,10 @@ module App:
     mosfet.gate ~> epd_fpc.gdr.line
     
     # --- Pull-up resistors for control signals ---
-    cs_pulldown = new Resistor
-    cs_pulldown.resistance = 10kohm +/- 10%
-    cs_pulldown.package = "0402"
-    epd_fpc.spi_cs.line ~> cs_pulldown ~> power_3v3.lv
+    cs_pullup = new Resistor
+    cs_pullup.resistance = 10kohm +/- 10%
+    cs_pullup.package = "0402"
+    epd_fpc.spi_cs.line ~> cs_pullup ~> power_3v3.hv
     
     dc_pullup = new Resistor
     dc_pullup.resistance = 10kohm +/- 10%
@@ -205,6 +199,26 @@ module App:
     gdr_pulldown.package = "0402"
     epd_fpc.gdr.line ~> gdr_pulldown ~> power_3v3.lv
 
+
+    power_vbus.hv.override_net_name = "POWER_VBUS"
+    power_3v3.hv.override_net_name = "POWER_3V3"
+    epd_dc.line.override_net_name = "EPD_DC"
+    epd_rst.line.override_net_name = "EPD_RST"
+    epd_busy.line.override_net_name = "EPD_BUSY"
+    epd_fpc.spi_cs.line.override_net_name = "EPD_SPI_CS"
+    epd_fpc.spi.sclk.line.override_net_name = "EPD_SPI_SCLK"
+    epd_fpc.spi.mosi.line.override_net_name = "EPD_SPI_MOSI"
+    epd_fpc.spi.miso.line.override_net_name = "EPD_SPI_MISO"
+
+    blue_led = new LEDIndicatorBlue
+    assert blue_led.current within 1mA to 2mA
+    esp32.gpio[1].line ~> blue_led ~> esp32.power.lv
+
+    red_led = new LEDIndicatorRed
+    assert red_led.current within 1mA to 2mA
+    power_3v3.hv ~> red_led ~> charger.status[1].line
+
+    lil_logo = new atopile_logo_4x4mm
 
 module EPaperFPC:
     package = new XUNPU_FPC_05F_24PH20_package

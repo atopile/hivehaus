@@ -1,6 +1,13 @@
 (fp_lib_table
     (version 7)
     (lib
+        (name "FOJAN_FRC0402F1204TS")
+        (type "KiCad")
+        (uri "${KIPRJMOD}/../../parts/FOJAN_FRC0402F1204TS")
+        (options "")
+        (descr "atopile: part lib: FOJAN_FRC0402F1204TS")
+    )
+    (lib
         (name "Murata_Electronics_GRM155R60J106ME44D")
         (type "KiCad")
         (uri "${KIPRJMOD}/../../parts/Murata_Electronics_GRM155R60J106ME44D")
@@ -92,6 +99,13 @@
         (descr "atopile: part lib: TWGMC_MBR0530")
     )
     (lib
+        (name "Taiyo_Yuden_LB2012T680M")
+        (type "KiCad")
+        (uri "${KIPRJMOD}/../../parts/Taiyo_Yuden_LB2012T680M")
+        (options "")
+        (descr "atopile: part lib: Taiyo_Yuden_LB2012T680M")
+    )
+    (lib
         (name "UNI_ROYAL_0402WGF1002TCE")
         (type "KiCad")
         (uri "${KIPRJMOD}/../../parts/UNI_ROYAL_0402WGF1002TCE")
@@ -167,6 +181,27 @@
         (uri "${KIPRJMOD}/../../parts/XUNPU_FPC_05F_24PH20")
         (options "")
         (descr "atopile: part lib: XUNPU_FPC_05F_24PH20")
+    )
+    (lib
+        (name "YAGEO_RC0402FR_07180KL")
+        (type "KiCad")
+        (uri "${KIPRJMOD}/../../parts/YAGEO_RC0402FR_07180KL")
+        (options "")
+        (descr "atopile: part lib: YAGEO_RC0402FR_07180KL")
+    )
+    (lib
+        (name "YAGEO_RC0402FR_0718KL")
+        (type "KiCad")
+        (uri "${KIPRJMOD}/../../parts/YAGEO_RC0402FR_0718KL")
+        (options "")
+        (descr "atopile: part lib: YAGEO_RC0402FR_0718KL")
+    )
+    (lib
+        (name "YAGEO_RL0402FR_070R47L")
+        (type "KiCad")
+        (uri "${KIPRJMOD}/../../parts/YAGEO_RL0402FR_070R47L")
+        (options "")
+        (descr "atopile: part lib: YAGEO_RL0402FR_070R47L")
     )
     (lib
         (name "cjiang_FNR4030S1R0MT")
