@@ -1,0 +1,268 @@
+esphome:
+  name: workout
+  on_boot: 
+    then:
+      - lvgl.page.show: clock_page
+
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+  password: ""
+
+ota:
+  - platform: esphome
+    password: ""
+
+wifi:
+  ssid: "atopile"
+  password: "code2pcb"
+
+  ap:
+    ssid: "Workout Fallback Hotspot"
+    password: "QuxGYPMmHAe1"
+
+captive_portal:
+
+
+font:
+  - file: 'fonts/Roboto-Regular.ttf'
+    id: sans_serif
+    size: 24
+  - file: 'fonts/JosefinSlab-Medium.ttf'
+    id: serif
+    size: 24
+
+spi:
+  clk_pin: 10
+  mosi_pin: 7
+
+display:
+  - id: e_display
+    platform: waveshare_epaper
+    cs_pin: 0
+    dc_pin: 4
+    data_rate: 10MHz
+    busy_pin:
+      number: 2
+      inverted: true
+    reset_pin: 3
+    model: 7.50inV2
+    # full_update_every: 30
+    # lambda: |-
+    #   it.print(0, 0, id(font1), "Hello World!");
+    update_interval: 10s
+    # full_update_every: 2
+    auto_clear_enabled: false
+
+color:
+- id: paper_white # Really black, but will appear white on e-paper
+  hex: "000000"
+- id: paper_black # Really white, but will appear black on e-paper
+  hex: "FFFFFF"
+
+lvgl:
+  buffer_size: 12%
+  theme:
+    image:
+      image_recolor: paper_black
+  bg_color: paper_white
+  bg_opa: COVER
+  default_font: serif
+  pages:
+  - id: clock_page
+    widgets:
+      - obj: # clock container
+          height: 280
+          width: 280
+          align: RIGHT_MID
+          # pad_right: 16
+          pad_all: 0
+          border_width: 0
+          bg_color: paper_white
+          widgets:
+            - meter: # clock face
+                height: 250
+                width: 250
+                border_width: 0
+                align: CENTER
+                bg_opa: TRANSP
+                text_color: paper_black
+                scales:
+                  - range_from: 0 # minutes scale
+                    range_to: 60
+                    angle_range: 360
+                    rotation: 270
+                    ticks:
+                      width: 1
+                      count: 61
+                      length: 10
+                      color: paper_black
+                    indicators:
+                      - line:
+                          id: minute_hand
+                          width: 3
+                          color: paper_black
+                          r_mod: -4
+                          value: 0
+                  - range_from: 1 # hours scale for labels
+                    range_to: 12
+                    angle_range: 330
+                    rotation: 300
+                    ticks:
+                      width: 1
+                      count: 12
+                      length: 1
+                      major:
+                        stride: 1
+                        width: 4
+                        length: 10
+                        color: paper_black
+                        label_gap: 12
+                  - range_from: 0 # hi-res hours scale for hand
+                    range_to: 720
+                    angle_range: 360
+                    rotation: 270
+                    ticks:
+                      count: 0
+                    indicators:
+                      - line:
+                          id: hour_hand
+                          width: 5
+                          color: paper_black
+                          r_mod: -30
+                          value: 0
+            - label:
+                id: day_label
+                y: -30
+            - label:
+                id: date_label
+                y: 30
+      - obj: # list container
+          height: 480
+          width: 480
+          align: LEFT_MID
+          pad_left: 16
+          border_width: 0
+          bg_color: paper_white
+          layout:
+            type: grid
+            # grid_row_align: end
+            grid_rows: [fr(1), fr(1), fr(1), fr(1), fr(1), fr(1), fr(1), fr(1)]
+            grid_columns: [100px, fr(1)]
+            grid_row_align: center
+            grid_column_align: center
+            pad_column: 8
+          widgets:
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "9:30am"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "Overhead Press + Pull Up"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "10:30am"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "Row + Push Up"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "11:30am"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "Lateral Raise + Split Squat"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "2:30pm"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "Dead Lift + Leg Raise"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "3:30pm"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "Tricep Extension + Chin Up"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "4:30pm"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "Shrug + Forearm"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "5:30pm"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "Squat"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "6:30pm"
+              - label:
+                  grid_cell_x_align: start
+                  grid_cell_y_align: center
+                  text: "Plank"
+              
+
+
+
+
+
+time:
+  - platform: homeassistant
+    id: time_comp
+    on_time_sync:
+      - script.execute: time_update
+    on_time:
+      - minutes: '*'
+        seconds: 0
+        then:
+          - script.execute: time_update
+
+script:
+  - id: time_update
+    then:
+      - lvgl.indicator.update:
+          id: minute_hand
+          value: !lambda |-
+            return id(time_comp).now().minute;
+      - lvgl.indicator.update:
+          id: hour_hand
+          value: !lambda |-
+            auto now = id(time_comp).now();
+            return std::fmod(now.hour, 12) * 60 + now.minute;
+      - lvgl.label.update:
+          id: date_label
+          text: !lambda |-
+            static const char * const mon_names[] = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+                                                     "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+            static char date_buf[8];
+            auto now = id(time_comp).now();
+            snprintf(date_buf, sizeof(date_buf), "%s %2d", mon_names[now.month-1], now.day_of_month);
+            return date_buf;
+      - lvgl.label.update:
+          id: day_label
+          text: !lambda |-
+            static const char * const day_names[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+            return day_names[id(time_comp).now().day_of_week - 1];
