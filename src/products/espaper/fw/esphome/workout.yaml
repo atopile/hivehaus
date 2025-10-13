@@ -73,7 +73,7 @@ lvgl:
       image_recolor: paper_black
   bg_color: paper_white
   bg_opa: COVER
-  default_font: serif
+  default_font: sans_serif
   pages:
   - id: clock_page
     widgets:
@@ -143,91 +143,7 @@ lvgl:
             - label:
                 id: date_label
                 y: 30
-      - obj: # list container
-          height: 480
-          width: 480
-          align: LEFT_MID
-          pad_left: 16
-          border_width: 0
-          bg_color: paper_white
-          layout:
-            type: grid
-            # grid_row_align: end
-            grid_rows: [fr(1), fr(1), fr(1), fr(1), fr(1), fr(1), fr(1), fr(1)]
-            grid_columns: [100px, fr(1)]
-            grid_row_align: center
-            grid_column_align: center
-            pad_column: 8
-          widgets:
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "9:30am"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "Overhead Press + Pull Up"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "10:30am"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "Row + Push Up"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "11:30am"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "Lateral Raise + Split Squat"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "2:30pm"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "Dead Lift + Leg Raise"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "3:30pm"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "Tricep Extension + Chin Up"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "4:30pm"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "Shrug + Forearm"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "5:30pm"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "Squat"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "6:30pm"
-              - label:
-                  grid_cell_x_align: start
-                  grid_cell_y_align: center
-                  text: "Plank"
-              
-
-
-
-
+      - obj: !include schedules/circuit11.yaml
 
 time:
   - platform: homeassistant

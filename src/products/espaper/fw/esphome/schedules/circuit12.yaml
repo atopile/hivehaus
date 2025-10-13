@@ -1,0 +1,29 @@
+height: 300
+width: 480
+align: LEFT_MID
+pad_left: 16
+border_width: 0
+bg_color: paper_white
+layout:
+  type: grid
+  grid_rows: [fr(1), fr(1), fr(1), fr(1)]
+  grid_columns: [120px, fr(1)]
+  grid_row_align: center
+  grid_column_align: center
+  pad_column: 8
+widgets:
+  - label:
+      text: "Circuit 1 Workout 2"
+      grid_cell_column_span: 2
+  - label:
+      text: "Narayan\nIoannis"
+  - label:
+      text: "Row + Push Up"
+  - label:
+      text: "Nick\nSam"
+  - label:
+      text: "Lateral Raise + Split Squat"
+  - label:
+      text: "Ray"
+  - label:
+      text: "Overhead Press + Pull Up"
