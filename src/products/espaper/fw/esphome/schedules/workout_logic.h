@@ -9,21 +9,50 @@ struct ScheduleConfig {
   int slot_min;
 };
 
-inline void advance_fake_time(int &hour, int &minute, int &second, int add_seconds) {
-  int total_seconds = second + add_seconds;
-  int new_hour = hour + (total_seconds / 3600);
-  int new_minute = minute + ((total_seconds % 3600) / 60);
-  int new_second = total_seconds % 60;
+inline void advance_fake_datetime(int &hour, int &minute, int &second,
+                                 int &day_of_week /*1-7*/, int &month /*1-12*/, int &day_of_month /*1-31*/,
+                                 int add_seconds) {
+  // Compute seconds since midnight
+  long long day_seconds = static_cast<long long>(hour) * 3600LL + static_cast<long long>(minute) * 60LL + second;
+  long long total = day_seconds + static_cast<long long>(add_seconds);
+  long long days_added = total / 86400LL;
+  long long rem = total % 86400LL;
+  if (rem < 0) { rem += 86400LL; --days_added; }
 
-  new_minute += new_second / 60;
-  new_second %= 60;
-  new_hour += new_minute / 60;
-  new_minute %= 60;
-  new_hour %= 24;
+  hour = static_cast<int>(rem / 3600LL);
+  rem %= 3600LL;
+  minute = static_cast<int>(rem / 60LL);
+  second = static_cast<int>(rem % 60LL);
 
-  hour = new_hour;
-  minute = new_minute;
-  second = new_second;
+  if (days_added != 0) {
+    // Advance day-of-week 1..7
+    int dow0 = (day_of_week - 1 + static_cast<int>(days_added)) % 7;
+    if (dow0 < 0) dow0 += 7;
+    day_of_week = dow0 + 1;
+
+    // Advance calendar day with simple month lengths (no leap year)
+    static const int mdays[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    int d = day_of_month;
+    int m = month;
+    long long add = days_added;
+    while (add > 0) {
+      int dim = mdays[(m - 1) % 12];
+      ++d;
+      if (d > dim) { d = 1; ++m; if (m > 12) m = 1; }
+      --add;
+    }
+    while (add < 0) {
+      --d;
+      if (d < 1) {
+        --m; if (m < 1) m = 12;
+        int dim = mdays[(m - 1) % 12];
+        d = dim;
+      }
+      ++add;
+    }
+    day_of_month = d;
+    month = m;
+  }
 }
 
 inline int get_circuit_idx(int hour, int minute, const ScheduleConfig &cfg) {
@@ -32,13 +61,22 @@ inline int get_circuit_idx(int hour, int minute, const ScheduleConfig &cfg) {
   return total >= c2_start ? 1 : 0;
 }
 
-inline int get_workout_idx(int hour, int minute, int circuit_idx, const ScheduleConfig &cfg) {
+inline int day_offset_for_rotation(int dow /*1..7*/) {
+  // Mon=2 -> 0, Tue=3 -> 1, Wed=4 -> 2, Thu=5 -> 0, Fri=6 -> 1, Sat=7 -> 2, Sun=1 -> 0
+  if (dow == 1) return 0; // Sunday
+  return (dow - 2) % 3;
+}
+
+inline int get_workout_idx(int hour, int minute, int circuit_idx, int day_of_week, const ScheduleConfig &cfg) {
   const int total = hour * 60 + minute;
   const int start = (circuit_idx == 0) ? (cfg.c1_h * 60 + cfg.c1_m) : (cfg.c2_h * 60 + cfg.c2_m);
   const int delta = total - start;
-  if (delta < cfg.slot_min) return 0;
-  if (delta < 2 * cfg.slot_min) return 1;
-  return 2;
+  int idx_by_time;
+  if (delta < cfg.slot_min) idx_by_time = 0;
+  else if (delta < 2 * cfg.slot_min) idx_by_time = 1;
+  else idx_by_time = 2;
+  int off = day_offset_for_rotation(day_of_week);
+  return (idx_by_time + off) % 3;
 }
 
 inline int minute_hand_value(int minute) { return minute; }
@@ -67,6 +105,17 @@ inline std::string build_day(int dow) {
   if (d < 1) d = 1;
   if (d > 7) d = 7;
   return std::string(day_names[d - 1]);
+}
+
+inline std::string build_date_with_day(int dow, int month, int day_of_month) {
+  static const char *const mon_names[] = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+                                          "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+  static const char *const day_names[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+  int d = dow; if (d < 1) d = 1; if (d > 7) d = 7;
+  int m = month; if (m < 1) m = 1; if (m > 12) m = 12;
+  char buf[16];
+  snprintf(buf, sizeof(buf), "%s %s %2d", day_names[d - 1], mon_names[m - 1], day_of_month);
+  return std::string(buf);
 }
 
 inline const char *get_workout_name(

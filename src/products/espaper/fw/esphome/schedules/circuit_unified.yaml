@@ -10,14 +10,14 @@ c2_start_minute: "30"
 slot_minutes: "60"
 
 # Circuit 1 workouts
-circuit1_w1: "Overhead Press + Pull Up"
-circuit1_w2: "Row + Push Up"
-circuit1_w3: "Lateral Raise + Split Squat"
+circuit1_w1: "1 - Overhead Press + Pull Up"
+circuit1_w2: "2 - Row + Push Up"
+circuit1_w3: "3 - Lateral Raise + Split Squat"
 
 # Circuit 2 workouts
-circuit2_w1: "Deadlift + Leg Raise"
-circuit2_w2: "Tricep Extension + Chin Up"
-circuit2_w3: "Shrug + Forearm"
+circuit2_w1: "1 - Deadlift + Leg Raise"
+circuit2_w2: "2 - Tricep Extension + Chin Up"
+circuit2_w3: "3 - Shrug + Forearm"
 
 # Participants per column
 participants_1: "Narayan\nIoannis"

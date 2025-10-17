@@ -32,7 +32,7 @@ globals:
     initial_value: '0'
   - id: fake_day_of_week
     type: int
-    initial_value: '1'
+    initial_value: '2'
   - id: fake_month
     type: int
     initial_value: '1'
@@ -193,11 +193,10 @@ lvgl:
                           r_mod: -30
                           value: 0
             - label:
-                id: day_label
-                y: -30
-            - label:
                 id: date_label
-                y: 30
+                align: TOP_MID
+                y: 0
+                text_color: paper_black
       - obj:
           height: 300
           width: 480
@@ -252,9 +251,15 @@ script:
             int h = id(fake_hour);
             int m = id(fake_minute);
             int s = id(fake_second);
-            advance_fake_time(h, m, s, 480);
+            int dow = id(fake_day_of_week);
+            int mon = id(fake_month);
+            int dom = id(fake_day_of_month);
+            advance_fake_datetime(h, m, s, dow, mon, dom, 960*6);
             id(fake_hour) = h;
             id(fake_minute) = m;
+            id(fake_day_of_week) = dow;
+            id(fake_month) = mon;
+            id(fake_day_of_month) = dom;
             return s;
       - globals.set:
           id: current_circuit_idx
@@ -269,7 +274,7 @@ script:
             ScheduleConfig cfg{atoi("${c1_start_hour}"), atoi("${c1_start_minute}"),
                                atoi("${c2_start_hour}"), atoi("${c2_start_minute}"),
                                atoi("${slot_minutes}")};
-            return get_workout_idx(id(fake_hour), id(fake_minute), id(current_circuit_idx), cfg);
+            return get_workout_idx(id(fake_hour), id(fake_minute), id(current_circuit_idx), id(fake_day_of_week), cfg);
       - script.execute: time_update
       - script.execute: update_workout_display
       - logger.log: "Fake time update completed"
@@ -286,11 +291,7 @@ script:
       - lvgl.label.update:
           id: date_label
           text: !lambda |-
-            return build_date(id(fake_month), id(fake_day_of_month));
-      - lvgl.label.update:
-          id: day_label
-          text: !lambda |-
-            return build_day(id(fake_day_of_week));
+            return build_date_with_day(id(fake_day_of_week), id(fake_month), id(fake_day_of_month));
   - id: update_workout_display
     then:
       - lvgl.label.update:
