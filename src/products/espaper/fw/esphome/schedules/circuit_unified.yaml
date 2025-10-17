@@ -13,17 +13,21 @@ layout:
   pad_column: 8
 widgets:
   - label:
-      text: "Circuit 1 Workout 1"
+      id: workout_title
+      text: "Circuit 1 Workout"
       grid_cell_column_span: 2
   - label:
       text: "Narayan\nIoannis"
   - label:
+      id: workout_1
       text: "Overhead Press + Pull Up"
   - label:
       text: "Nick\nSam"
   - label:
+      id: workout_2
       text: "Row + Push Up"
   - label:
       text: "Ray"
   - label:
+      id: workout_3
       text: "Lateral Raise + Split Squat"

@@ -3,7 +3,10 @@ esphome:
   on_boot: 
     then:
       - lvgl.page.show: clock_page
-
+      - delay: 2s
+      - script.execute: time_update
+      - script.execute: update_workout_display
+      - delay: 1s
 
 esp32:
   board: esp32-c3-devkitm-1
@@ -11,6 +14,31 @@ esp32:
     type: esp-idf
 
 logger:
+  level: DEBUG
+
+globals:
+  - id: fake_hour
+    type: int
+    initial_value: '9'
+  - id: fake_minute
+    type: int
+    initial_value: '29'
+  - id: fake_second
+    type: int
+    initial_value: '0'
+  - id: fake_day_of_week
+    type: int
+    initial_value: '1'
+  - id: fake_month
+    type: int
+    initial_value: '1'
+  - id: fake_day_of_month
+    type: int
+    initial_value: '1'
+  - id: current_workout_idx
+    type: int
+    initial_value: '0'
+
 
 api:
   password: ""
@@ -18,16 +46,40 @@ api:
 ota:
   - platform: esphome
     password: ""
+    port: 3232
+
+safe_mode:
+  reboot_timeout: 10min
 
 wifi:
   ssid: "atopile"
   password: "code2pcb"
+  fast_connect: true
+  reboot_timeout: 15min
+  power_save_mode: none
+
+  on_connect:
+    then:
+      - logger.log: "WiFi connected successfully"
+  on_disconnect:
+    then:
+      - logger.log: "WiFi disconnected"
 
   ap:
     ssid: "Workout Fallback Hotspot"
     password: "QuxGYPMmHAe1"
 
 captive_portal:
+
+# WiFi status monitoring
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "WiFi IP"
+    ssid:
+      name: "WiFi SSID"
+    mac_address:
+      name: "WiFi MAC"
 
 
 font:
@@ -53,11 +105,7 @@ display:
       inverted: true
     reset_pin: 3
     model: 7.50inV2
-    # full_update_every: 30
-    # lambda: |-
-    #   it.print(0, 0, id(font1), "Hello World!");
-    update_interval: 10s
-    # full_update_every: 2
+    update_interval: 2s
     auto_clear_enabled: false
 
 color:
@@ -143,42 +191,97 @@ lvgl:
             - label:
                 id: date_label
                 y: 30
-      - obj: !include schedules/circuit11.yaml
+      - obj: !include schedules/circuit_unified.yaml
 
-time:
-  - platform: homeassistant
-    id: time_comp
-    on_time_sync:
-      - script.execute: time_update
-    on_time:
-      - minutes: '*'
-        seconds: 0
-        then:
-          - script.execute: time_update
+interval:
+  - id: time_interval
+    interval: 1s
+    then:
+      - script.execute: fake_time_update
 
 script:
+  - id: fake_time_update
+    then:
+      - logger.log: "Fake time update executing"
+      - globals.set:
+          id: fake_second
+          value: !lambda |-
+            // Add 8 minutes (480 seconds) to simulate time passage
+            int total_seconds = id(fake_second) + 480;
+            int new_hour = id(fake_hour) + (total_seconds / 3600);
+            int new_minute = id(fake_minute) + ((total_seconds % 3600) / 60);
+            int new_second = total_seconds % 60;
+            
+            // Normalize time
+            new_minute += new_second / 60;
+            new_second %= 60;
+            new_hour += new_minute / 60;
+            new_minute %= 60;
+            new_hour %= 24;
+            
+            id(fake_hour) = new_hour;
+            id(fake_minute) = new_minute;
+            return new_second;
+      - globals.set:
+          id: current_workout_idx
+          value: !lambda |-
+            int hour = id(fake_hour);
+            int minute = id(fake_minute);
+            if (hour < 10 || (hour == 10 && minute < 30)) return 0;
+            if (hour < 11 || (hour == 11 && minute < 30)) return 1;
+            return 2;
+      - script.execute: time_update
+      - script.execute: update_workout_display
+      - logger.log: "Fake time update completed"
   - id: time_update
     then:
       - lvgl.indicator.update:
           id: minute_hand
           value: !lambda |-
-            return id(time_comp).now().minute;
+            return id(fake_minute);
       - lvgl.indicator.update:
           id: hour_hand
           value: !lambda |-
-            auto now = id(time_comp).now();
-            return std::fmod(now.hour, 12) * 60 + now.minute;
+            return (id(fake_hour) % 12) * 60 + id(fake_minute);
       - lvgl.label.update:
           id: date_label
           text: !lambda |-
             static const char * const mon_names[] = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN",
                                                      "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
             static char date_buf[8];
-            auto now = id(time_comp).now();
-            snprintf(date_buf, sizeof(date_buf), "%s %2d", mon_names[now.month-1], now.day_of_month);
+            snprintf(date_buf, sizeof(date_buf), "%s %2d", mon_names[id(fake_month)-1], id(fake_day_of_month));
             return date_buf;
       - lvgl.label.update:
           id: day_label
           text: !lambda |-
             static const char * const day_names[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
-            return day_names[id(time_comp).now().day_of_week - 1];
+            return day_names[id(fake_day_of_week) - 1];
+  - id: update_workout_display
+    then:
+      - lvgl.label.update:
+          id: workout_title
+          text: !lambda |-
+            static char title_buf[32];
+            snprintf(title_buf, sizeof(title_buf), "Circuit 1 Workout %d", id(current_workout_idx) + 1);
+            return title_buf;
+      - lvgl.label.update:
+          id: workout_1
+          text: !lambda |-
+            static const char * const workouts[] = {
+              "Overhead Press + Pull Up", "Row + Push Up", "Lateral Raise + Split Squat"
+            };
+            return workouts[id(current_workout_idx)];
+      - lvgl.label.update:
+          id: workout_2
+          text: !lambda |-
+            static const char * const workouts[] = {
+              "Row + Push Up", "Lateral Raise + Split Squat", "Overhead Press + Pull Up"
+            };
+            return workouts[id(current_workout_idx)];
+      - lvgl.label.update:
+          id: workout_3
+          text: !lambda |-
+            static const char * const workouts[] = {
+              "Lateral Raise + Split Squat", "Overhead Press + Pull Up", "Row + Push Up"
+            };
+            return workouts[id(current_workout_idx)];
