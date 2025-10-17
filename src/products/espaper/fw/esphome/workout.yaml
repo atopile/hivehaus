@@ -1,5 +1,9 @@
+substitutions: !include schedules/circuit_unified.yaml
+
 esphome:
   name: workout
+  includes:
+    - schedules/workout_logic.h
   on_boot: 
     then:
       - lvgl.page.show: clock_page
@@ -36,6 +40,9 @@ globals:
     type: int
     initial_value: '1'
   - id: current_workout_idx
+    type: int
+    initial_value: '0'
+  - id: current_circuit_idx
     type: int
     initial_value: '0'
 
@@ -191,7 +198,43 @@ lvgl:
             - label:
                 id: date_label
                 y: 30
-      - obj: !include schedules/circuit_unified.yaml
+      - obj:
+          height: 300
+          width: 480
+          align: LEFT_MID
+          pad_left: 16
+          border_width: 0
+          bg_color: paper_white
+          layout:
+            type: grid
+            grid_rows: [fr(1), fr(1), fr(1), fr(1)]
+            grid_columns: [120px, fr(1)]
+            grid_row_align: center
+            grid_column_align: center
+            pad_column: 8
+          widgets:
+            - label:
+                id: workout_title
+                text: ""
+                grid_cell_column_span: 2
+            - label:
+                id: participants_1
+                text: ""
+            - label:
+                id: workout_1
+                text: ""
+            - label:
+                id: participants_2
+                text: ""
+            - label:
+                id: workout_2
+                text: ""
+            - label:
+                id: participants_3
+                text: ""
+            - label:
+                id: workout_3
+                text: ""
 
 interval:
   - id: time_interval
@@ -206,30 +249,27 @@ script:
       - globals.set:
           id: fake_second
           value: !lambda |-
-            // Add 8 minutes (480 seconds) to simulate time passage
-            int total_seconds = id(fake_second) + 480;
-            int new_hour = id(fake_hour) + (total_seconds / 3600);
-            int new_minute = id(fake_minute) + ((total_seconds % 3600) / 60);
-            int new_second = total_seconds % 60;
-            
-            // Normalize time
-            new_minute += new_second / 60;
-            new_second %= 60;
-            new_hour += new_minute / 60;
-            new_minute %= 60;
-            new_hour %= 24;
-            
-            id(fake_hour) = new_hour;
-            id(fake_minute) = new_minute;
-            return new_second;
+            int h = id(fake_hour);
+            int m = id(fake_minute);
+            int s = id(fake_second);
+            advance_fake_time(h, m, s, 480);
+            id(fake_hour) = h;
+            id(fake_minute) = m;
+            return s;
+      - globals.set:
+          id: current_circuit_idx
+          value: !lambda |-
+            ScheduleConfig cfg{atoi("${c1_start_hour}"), atoi("${c1_start_minute}"),
+                               atoi("${c2_start_hour}"), atoi("${c2_start_minute}"),
+                               atoi("${slot_minutes}")};
+            return get_circuit_idx(id(fake_hour), id(fake_minute), cfg);
       - globals.set:
           id: current_workout_idx
           value: !lambda |-
-            int hour = id(fake_hour);
-            int minute = id(fake_minute);
-            if (hour < 10 || (hour == 10 && minute < 30)) return 0;
-            if (hour < 11 || (hour == 11 && minute < 30)) return 1;
-            return 2;
+            ScheduleConfig cfg{atoi("${c1_start_hour}"), atoi("${c1_start_minute}"),
+                               atoi("${c2_start_hour}"), atoi("${c2_start_minute}"),
+                               atoi("${slot_minutes}")};
+            return get_workout_idx(id(fake_hour), id(fake_minute), id(current_circuit_idx), cfg);
       - script.execute: time_update
       - script.execute: update_workout_display
       - logger.log: "Fake time update completed"
@@ -238,50 +278,55 @@ script:
       - lvgl.indicator.update:
           id: minute_hand
           value: !lambda |-
-            return id(fake_minute);
+            return minute_hand_value(id(fake_minute));
       - lvgl.indicator.update:
           id: hour_hand
           value: !lambda |-
-            return (id(fake_hour) % 12) * 60 + id(fake_minute);
+            return hour_hand_value(id(fake_hour), id(fake_minute));
       - lvgl.label.update:
           id: date_label
           text: !lambda |-
-            static const char * const mon_names[] = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-                                                     "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
-            static char date_buf[8];
-            snprintf(date_buf, sizeof(date_buf), "%s %2d", mon_names[id(fake_month)-1], id(fake_day_of_month));
-            return date_buf;
+            return build_date(id(fake_month), id(fake_day_of_month));
       - lvgl.label.update:
           id: day_label
           text: !lambda |-
-            static const char * const day_names[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
-            return day_names[id(fake_day_of_week) - 1];
+            return build_day(id(fake_day_of_week));
   - id: update_workout_display
     then:
       - lvgl.label.update:
           id: workout_title
           text: !lambda |-
-            static char title_buf[32];
-            snprintf(title_buf, sizeof(title_buf), "Circuit 1 Workout %d", id(current_workout_idx) + 1);
-            return title_buf;
+            return build_title(id(current_circuit_idx), id(current_workout_idx));
+      - lvgl.label.update:
+          id: participants_1
+          text: !lambda |-
+            return std::string(R"(${participants_1})");
+      - lvgl.label.update:
+          id: participants_2
+          text: !lambda |-
+            return std::string(R"(${participants_2})");
+      - lvgl.label.update:
+          id: participants_3
+          text: !lambda |-
+            return std::string(R"(${participants_3})");
       - lvgl.label.update:
           id: workout_1
           text: !lambda |-
-            static const char * const workouts[] = {
-              "Overhead Press + Pull Up", "Row + Push Up", "Lateral Raise + Split Squat"
-            };
-            return workouts[id(current_workout_idx)];
+            return std::string(get_workout_name(
+              id(current_circuit_idx), id(current_workout_idx),
+              R"(${circuit1_w1})", R"(${circuit1_w2})", R"(${circuit1_w3})",
+              R"(${circuit2_w1})", R"(${circuit2_w2})", R"(${circuit2_w3})"));
       - lvgl.label.update:
           id: workout_2
           text: !lambda |-
-            static const char * const workouts[] = {
-              "Row + Push Up", "Lateral Raise + Split Squat", "Overhead Press + Pull Up"
-            };
-            return workouts[id(current_workout_idx)];
+            return std::string(get_workout_name(
+              id(current_circuit_idx), (id(current_workout_idx) + 1) % 3,
+              R"(${circuit1_w1})", R"(${circuit1_w2})", R"(${circuit1_w3})",
+              R"(${circuit2_w1})", R"(${circuit2_w2})", R"(${circuit2_w3})"));
       - lvgl.label.update:
           id: workout_3
           text: !lambda |-
-            static const char * const workouts[] = {
-              "Lateral Raise + Split Squat", "Overhead Press + Pull Up", "Row + Push Up"
-            };
-            return workouts[id(current_workout_idx)];
+            return std::string(get_workout_name(
+              id(current_circuit_idx), (id(current_workout_idx) + 2) % 3,
+              R"(${circuit1_w1})", R"(${circuit1_w2})", R"(${circuit1_w3})",
+              R"(${circuit2_w1})", R"(${circuit2_w2})", R"(${circuit2_w3})"));

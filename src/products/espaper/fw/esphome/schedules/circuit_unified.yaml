@@ -1,33 +1,25 @@
-height: 300
-width: 480
-align: LEFT_MID
-pad_left: 16
-border_width: 0
-bg_color: paper_white
-layout:
-  type: grid
-  grid_rows: [fr(1), fr(1), fr(1), fr(1)]
-  grid_columns: [120px, fr(1)]
-  grid_row_align: center
-  grid_column_align: center
-  pad_column: 8
-widgets:
-  - label:
-      id: workout_title
-      text: "Circuit 1 Workout"
-      grid_cell_column_span: 2
-  - label:
-      text: "Narayan\nIoannis"
-  - label:
-      id: workout_1
-      text: "Overhead Press + Pull Up"
-  - label:
-      text: "Nick\nSam"
-  - label:
-      id: workout_2
-      text: "Row + Push Up"
-  - label:
-      text: "Ray"
-  - label:
-      id: workout_3
-      text: "Lateral Raise + Split Squat"
+---
+# Centralized workout data for both circuits
+# Used via: substitutions: !include schedules/circuit_unified.yaml
+
+# Circuit timing
+c1_start_hour: "9"
+c1_start_minute: "30"
+c2_start_hour: "14"
+c2_start_minute: "30"
+slot_minutes: "60"
+
+# Circuit 1 workouts
+circuit1_w1: "Overhead Press + Pull Up"
+circuit1_w2: "Row + Push Up"
+circuit1_w3: "Lateral Raise + Split Squat"
+
+# Circuit 2 workouts
+circuit2_w1: "Deadlift + Leg Raise"
+circuit2_w2: "Tricep Extension + Chin Up"
+circuit2_w3: "Shrug + Forearm"
+
+# Participants per column
+participants_1: "Narayan\nIoannis"
+participants_2: "Nick\nSam"
+participants_3: "Ray"
