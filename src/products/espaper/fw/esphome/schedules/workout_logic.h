@@ -88,32 +88,13 @@ inline std::string build_title(int circuit_idx, int workout_idx) {
   return std::string(buf);
 }
 
-inline std::string build_date(int month, int day_of_month) {
-  static const char *const mon_names[] = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-                                          "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
-  char buf[8];
-  int m = month;
-  if (m < 1) m = 1;
-  if (m > 12) m = 12;
-  snprintf(buf, sizeof(buf), "%s %2d", mon_names[m - 1], day_of_month);
-  return std::string(buf);
-}
-
-inline std::string build_day(int dow) {
-  static const char *const day_names[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
-  int d = dow;
-  if (d < 1) d = 1;
-  if (d > 7) d = 7;
-  return std::string(day_names[d - 1]);
-}
-
 inline std::string build_date_with_day(int dow, int month, int day_of_month) {
-  static const char *const mon_names[] = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-                                          "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
-  static const char *const day_names[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+  static const char *const mon_names[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+  static const char *const day_names[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
   int d = dow; if (d < 1) d = 1; if (d > 7) d = 7;
   int m = month; if (m < 1) m = 1; if (m > 12) m = 12;
-  char buf[16];
+  char buf[24];
   snprintf(buf, sizeof(buf), "%s %s %2d", day_names[d - 1], mon_names[m - 1], day_of_month);
   return std::string(buf);
 }

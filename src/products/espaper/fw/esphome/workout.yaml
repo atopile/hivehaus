@@ -78,6 +78,27 @@ wifi:
 
 captive_portal:
 
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: America/Los_Angeles
+    on_time:
+      - seconds: 0
+        minutes: "*"
+        then:
+          - lambda: |-
+              auto now = id(sntp_time).now();
+              if (!now.is_valid()) return;
+              id(fake_hour) = now.hour;
+              id(fake_minute) = now.minute;
+              id(fake_second) = now.second;
+              id(fake_day_of_week) = now.day_of_week;   // 1..7
+              id(fake_month) = now.month;               // 1..12
+              id(fake_day_of_month) = now.day_of_month; // 1..31
+          - script.execute: time_update
+          - script.execute: update_workout_display
+          - component.update: e_display
+
 # WiFi status monitoring
 text_sensor:
   - platform: wifi_info
@@ -90,12 +111,15 @@ text_sensor:
 
 
 font:
-  - file: 'fonts/Roboto-Regular.ttf'
+  - file: 'fonts/JetBrainsMono-Light.ttf'
     id: sans_serif
-    size: 24
+    size: 18
   - file: 'fonts/JosefinSlab-Medium.ttf'
     id: serif
     size: 24
+  - file: 'fonts/JetBrainsMono-Light.ttf'
+    id: title_font
+    size: 32
 
 spi:
   clk_pin: 10
@@ -112,7 +136,7 @@ display:
       inverted: true
     reset_pin: 3
     model: 7.50inV2
-    update_interval: 2s
+    update_interval: never
     auto_clear_enabled: false
 
 color:
@@ -132,135 +156,130 @@ lvgl:
   pages:
   - id: clock_page
     widgets:
-      - obj: # clock container
+      - label:
+          id: workout_title_big
+          align: TOP_LEFT
+          x: 10
+          y: 10
+          text_color: paper_black
+          text_font: title_font
+      - label:
+          id: date_label_big
+          align: TOP_RIGHT
+          x: -10
+          y: 10
+          text_color: paper_black
+          text_font: title_font
+      - meter: # clock face
           height: 280
           width: 280
           align: RIGHT_MID
-          # pad_right: 16
-          pad_all: 0
-          border_width: 0
-          bg_color: paper_white
-          widgets:
-            - meter: # clock face
-                height: 250
-                width: 250
-                border_width: 0
-                align: CENTER
-                bg_opa: TRANSP
-                text_color: paper_black
-                scales:
-                  - range_from: 0 # minutes scale
-                    range_to: 60
-                    angle_range: 360
-                    rotation: 270
-                    ticks:
-                      width: 1
-                      count: 61
-                      length: 10
-                      color: paper_black
-                    indicators:
-                      - line:
-                          id: minute_hand
-                          width: 3
-                          color: paper_black
-                          r_mod: -4
-                          value: 0
-                  - range_from: 1 # hours scale for labels
-                    range_to: 12
-                    angle_range: 330
-                    rotation: 300
-                    ticks:
-                      width: 1
-                      count: 12
-                      length: 1
-                      major:
-                        stride: 1
-                        width: 4
-                        length: 10
-                        color: paper_black
-                        label_gap: 12
-                  - range_from: 0 # hi-res hours scale for hand
-                    range_to: 720
-                    angle_range: 360
-                    rotation: 270
-                    ticks:
-                      count: 0
-                    indicators:
-                      - line:
-                          id: hour_hand
-                          width: 5
-                          color: paper_black
-                          r_mod: -30
-                          value: 0
-            - label:
-                id: date_label
-                align: TOP_MID
-                y: 0
-                text_color: paper_black
-      - obj:
+          bg_opa: TRANSP
+          text_color: paper_black
+          scales:
+            - range_from: 0 # minutes scale
+              range_to: 60
+              angle_range: 360
+              rotation: 270
+              ticks:
+                width: 1
+                count: 61
+                length: 5
+                color: paper_black
+              indicators:
+                - line:
+                    id: minute_hand
+                    width: 1
+                    color: paper_black
+                    r_mod: -4
+                    value: 0
+            - range_from: 1 # hours scale for labels
+              range_to: 12
+              angle_range: 330
+              rotation: 300
+              ticks:
+                width: 1
+                count: 12
+                length: 1
+                major:
+                  stride: 1
+                  width: 2
+                  length: 10
+                  color: paper_black
+                  label_gap: 12
+            - range_from: 0 # hi-res hours scale for hand
+              range_to: 720
+              angle_range: 360
+              rotation: 270
+              ticks:
+                count: 0
+              indicators:
+                - line:
+                    id: hour_hand
+                    width: 2
+                    color: paper_black
+                    r_mod: -30
+                    value: 0
+      - obj: # workout grid
           height: 300
-          width: 480
+          width: 520
           align: LEFT_MID
           pad_left: 16
-          border_width: 0
           bg_color: paper_white
           layout:
             type: grid
             grid_rows: [fr(1), fr(1), fr(1), fr(1)]
             grid_columns: [120px, fr(1)]
             grid_row_align: center
-            grid_column_align: center
+            grid_column_align: START
             pad_column: 8
           widgets:
             - label:
-                id: workout_title
-                text: ""
-                grid_cell_column_span: 2
-            - label:
                 id: participants_1
                 text: ""
+                width: 120
+                text_align: LEFT
+                long_mode: WRAP
+                # base_dir not supported in ESPHome LVGL; remove
+                # line spacing set to default; using WRAP + width for consistency
+                pad_left: 0
+                grid_cell_x_align: START
             - label:
                 id: workout_1
                 text: ""
+                text_align: LEFT
             - label:
                 id: participants_2
                 text: ""
+                width: 120
+                text_align: LEFT
+                long_mode: WRAP
+                # base_dir not supported in ESPHome LVGL; remove
+                # line spacing set to default; using WRAP + width for consistency
+                pad_left: 0
+                grid_cell_x_align: START
             - label:
                 id: workout_2
                 text: ""
+                text_align: LEFT
             - label:
                 id: participants_3
                 text: ""
+                width: 120
+                text_align: LEFT
+                long_mode: WRAP
+                # base_dir not supported in ESPHome LVGL; remove
+                # line spacing set to default; using WRAP + width for consistency
+                pad_left: 0
+                grid_cell_x_align: START
             - label:
                 id: workout_3
                 text: ""
-
-interval:
-  - id: time_interval
-    interval: 1s
-    then:
-      - script.execute: fake_time_update
+                text_align: LEFT
 
 script:
-  - id: fake_time_update
+  - id: time_update
     then:
-      - logger.log: "Fake time update executing"
-      - globals.set:
-          id: fake_second
-          value: !lambda |-
-            int h = id(fake_hour);
-            int m = id(fake_minute);
-            int s = id(fake_second);
-            int dow = id(fake_day_of_week);
-            int mon = id(fake_month);
-            int dom = id(fake_day_of_month);
-            advance_fake_datetime(h, m, s, dow, mon, dom, 960*6);
-            id(fake_hour) = h;
-            id(fake_minute) = m;
-            id(fake_day_of_week) = dow;
-            id(fake_month) = mon;
-            id(fake_day_of_month) = dom;
-            return s;
       - globals.set:
           id: current_circuit_idx
           value: !lambda |-
@@ -275,11 +294,6 @@ script:
                                atoi("${c2_start_hour}"), atoi("${c2_start_minute}"),
                                atoi("${slot_minutes}")};
             return get_workout_idx(id(fake_hour), id(fake_minute), id(current_circuit_idx), id(fake_day_of_week), cfg);
-      - script.execute: time_update
-      - script.execute: update_workout_display
-      - logger.log: "Fake time update completed"
-  - id: time_update
-    then:
       - lvgl.indicator.update:
           id: minute_hand
           value: !lambda |-
@@ -289,13 +303,13 @@ script:
           value: !lambda |-
             return hour_hand_value(id(fake_hour), id(fake_minute));
       - lvgl.label.update:
-          id: date_label
+          id: date_label_big
           text: !lambda |-
             return build_date_with_day(id(fake_day_of_week), id(fake_month), id(fake_day_of_month));
   - id: update_workout_display
     then:
       - lvgl.label.update:
-          id: workout_title
+          id: workout_title_big
           text: !lambda |-
             return build_title(id(current_circuit_idx), id(current_workout_idx));
       - lvgl.label.update:
