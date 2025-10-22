@@ -8,6 +8,18 @@ esphome:
     then:
       - lvgl.page.show: clock_page
       - delay: 2s
+      - lambda: |-
+          // Initialize time globals from SNTP on boot
+          auto now = id(sntp_time).now();
+          if (now.is_valid()) {
+            id(fake_hour) = now.hour;
+            id(fake_minute) = now.minute;
+            id(fake_second) = now.second;
+            id(fake_day_of_week) = now.day_of_week;
+            id(fake_month) = now.month;
+            id(fake_day_of_month) = now.day_of_month;
+            ESP_LOGD("boot", "Initialized time from SNTP: %02d:%02d:%02d", now.hour, now.minute, now.second);
+          }
       - script.execute: time_update
       - script.execute: update_workout_display
       - delay: 1s
@@ -83,20 +95,17 @@ time:
     id: sntp_time
     timezone: America/Los_Angeles
     on_time:
-      - seconds: 0
+      - seconds: 50
         minutes: "*"
         then:
-          - lambda: |-
-              auto now = id(sntp_time).now();
-              if (!now.is_valid()) return;
-              id(fake_hour) = now.hour;
-              id(fake_minute) = now.minute;
-              id(fake_second) = now.second;
-              id(fake_day_of_week) = now.day_of_week;   // 1..7
-              id(fake_month) = now.month;               // 1..12
-              id(fake_day_of_month) = now.day_of_month; // 1..31
           - script.execute: time_update
+          - script.wait: time_update
           - script.execute: update_workout_display
+          - script.wait: update_workout_display
+          - lvgl.pause:
+          - delay: 50ms
+          - lvgl.resume:
+          - delay: 100ms
           - component.update: e_display
 
 # WiFi status monitoring
@@ -280,6 +289,35 @@ lvgl:
 script:
   - id: time_update
     then:
+      - lambda: |-
+          // Update time globals for the NEXT minute (trigger at :50, show :00 of next minute)
+          auto now = id(sntp_time).now();
+          if (!now.is_valid()) return;
+          
+          ESP_LOGD("time_update", "Current time: %02d:%02d:%02d", now.hour, now.minute, now.second);
+          
+          // Increment minute by 1 to get next minute
+          int next_minute = now.minute + 1;
+          int next_hour = now.hour;
+          // Handle minute overflow
+          while (next_minute >= 60) {
+            next_minute -= 60;
+            next_hour++;
+            if (next_hour >= 24) {
+              next_hour = 0;
+            }
+          }
+          
+          ESP_LOGD("time_update", "Setting display to: %02d:%02d:00", next_hour, next_minute);
+          
+          id(fake_hour) = next_hour;
+          id(fake_minute) = next_minute;
+          id(fake_second) = 0;
+          id(fake_day_of_week) = now.day_of_week;
+          id(fake_month) = now.month;
+          id(fake_day_of_month) = now.day_of_month;
+          
+          ESP_LOGD("time_update_script", "After setting: fake_hour=%d, fake_minute=%d", id(fake_hour), id(fake_minute));
       - globals.set:
           id: current_circuit_idx
           value: !lambda |-
@@ -297,15 +335,24 @@ script:
       - lvgl.indicator.update:
           id: minute_hand
           value: !lambda |-
-            return minute_hand_value(id(fake_minute));
+            int val = minute_hand_value(id(fake_minute));
+            ESP_LOGD("time_update_script", "Setting minute_hand to %d", val);
+            return val;
       - lvgl.indicator.update:
           id: hour_hand
           value: !lambda |-
-            return hour_hand_value(id(fake_hour), id(fake_minute));
+            int val = hour_hand_value(id(fake_hour), id(fake_minute));
+            ESP_LOGD("time_update_script", "Setting hour_hand to %d", val);
+            return val;
       - lvgl.label.update:
           id: date_label_big
           text: !lambda |-
             return build_date_with_day(id(fake_day_of_week), id(fake_month), id(fake_day_of_month));
+      - lvgl.label.update:
+          id: date_label_big
+          text: !lambda |-
+            return build_date_with_day(id(fake_day_of_week), id(fake_month), id(fake_day_of_month));
+      - delay: 100ms
   - id: update_workout_display
     then:
       - lvgl.label.update:
