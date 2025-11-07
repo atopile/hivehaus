@@ -23,3 +23,7 @@ circuit2_w3: "3 - Shrug + Forearm"
 participants_1: "Narayan\nIoannis"
 participants_2: "Nick\nSam"
 participants_3: "Ray\nPerson 3"
+
+# Group workouts
+group_530_label: "Group Squat"
+group_630_label: "Group Plank"
