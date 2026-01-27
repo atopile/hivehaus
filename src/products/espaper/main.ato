@@ -5,19 +5,26 @@ ESPHome-compatible Waveshare e-paper driver (ESP32-C3 based).
 #pragma experiment("BRIDGE_CONNECT")
 #pragma experiment("FOR_LOOP")
 
-import ElectricPower, SPI, ElectricLogic, Capacitor, Inductor, Diode, Electrical, Resistor, NFET
+import ElectricPower
+import SPI
+import ElectricLogic
+import Capacitor
+import Inductor
+import Diode
+import Electrical
+import Resistor
+import MOSFET
 
-from "atopile/espressif-esp32-c3/esp32_c3_mini.ato" import ESP32_C3_MINI_1_driver
+from "atopile/espressif-esp32-c3/espressif-esp32-c3-mini.ato" import ESP32_C3_MINI_1
 from "atopile/st-ldk220/st-ldk220.ato" import LDK220M_R
-from "atopile/usb-connectors/usb-connectors.ato" import USBCConn
-from "parts/XUNPU_FPC_05F_24PH20/XUNPU_FPC_05F_24PH20.ato" import XUNPU_FPC_05F_24PH20_package 
-from "atopile/batteries/eemb_battery_lp402535.ato" import EMB_BATTERY_LP402535_Example
-from "atopile/ti-bq25185/ti-bq25185.ato" import BQ25185_driver
+from "atopile/usb-connectors/usb-connectors.ato" import USB2_0TypeCHorizontalConnector
+from "parts/XUNPU_FPC_05F_24PH20/XUNPU_FPC_05F_24PH20.ato" import XUNPU_FPC_05F_24PH20_package
+from "atopile/batteries/batteries.ato" import EMB_BATTERY_LP402535
+from "atopile/ti-bq25185/ti-bq25185.ato" import TI_BQ25185
 from "atopile/ti-tps63020/ti-tps63020.ato" import TPS63020_driver
 from "atopile/logos/logos.ato" import atopile_logo_4x4mm
 from "atopile/indicator-leds/indicator-leds.ato" import LEDIndicatorBlue
 from "atopile/indicator-leds/indicator-leds.ato" import LEDIndicatorRed
-
 
 module App:
     """
@@ -39,31 +46,27 @@ module App:
     assert power_3v3.voltage is 3.3V +/- 5%
 
     # --- Power Components ---
-    usb = new USBCConn
+    usb = new USB2_0TypeCHorizontalConnector
     """
     USB C Connector for power input and usb comms to the ESP32-C3
     """
-    usb.usb2.usb_if.buspower ~ power_vbus
+    usb.usb.usb_if.buspower ~ power_vbus
 
-    battery = new EMB_BATTERY_LP402535_Example
+    battery = new EMB_BATTERY_LP402535
     """
     Small Lipo battery for extended runtime with epaper panel
     """
-    battery.battery.model.capacity = 300mAh
-    assert battery.battery.model.voltage is 3V to 4.2V
 
-    charger = new BQ25185_driver
+    charger = new TI_BQ25185
     """
     BQ25185 charger for the battery. Has power path to forward the usb power to load if connected.
     """
-    charger.charge_current_limit = battery.battery.model.capacity / 2h +/- 10%
+    charger.charge_current_limit = battery.model.capacity / 2hour +/- 10%
     charger.input_current_limit = 500mA
-    assert charger.battery_voltage_limit_high is 4.2V
-    assert charger.battery_voltage_limit_low is 3.0V
     temp_sensor = new Resistor
     temp_sensor.resistance = 10kohm +/- 10%
     temp_sensor.package = "0402"
-    charger.temperature_sense_manual_reset_control.line ~> temp_sensor ~> power_3v3.gnd
+    charger.temp_sense.line ~> temp_sensor ~> power_3v3.gnd
 
     buck_boost = new TPS63020_driver
     """
@@ -72,13 +75,15 @@ module App:
     buck_boost.v_out = 3.3V +/- 5%
 
     # --- Power Connections ---
-    usb.usb2.usb_if.buspower ~> charger ~> battery.power_battery
-    charger.power_sys ~> buck_boost ~> power_3v3
-    
+    usb.usb.usb_if.buspower ~ charger.power_input
+    battery.power ~ charger.power_battery
+    charger.power_system ~ buck_boost.power_in
+    # buck_boost.power_out ~ power_3v3
+
     # --- esp32 ---
-    esp32 = new ESP32_C3_MINI_1_driver
+    esp32 = new ESP32_C3_MINI_1
     power_3v3 ~ esp32.power
-    
+
     # --- E-paper control lines ---
     epd_dc = new ElectricLogic
     epd_dc.reference ~ power_3v3
@@ -92,6 +97,10 @@ module App:
     input_cap.capacitance = 4.7uF +/- 20%
     input_cap.package = "0603"
     power_vbus.hv ~> input_cap ~> power_vbus.lv
+
+    # --- Battery charger status ---
+    charger.status_1 ~ esp32.gpio[8]
+    charger.status_2 ~ esp32.gpio[9]
 
     # --- E-paper FPC connector (24-pin, 0.5mm) ---
     epd_fpc = new EPaperFPC
@@ -115,14 +124,14 @@ module App:
     epd_fpc.vcom.line ~> display_decoupling_caps[9] ~> power_3v3.lv
 
     # --- Comms ---
-    esp32.usb_if ~ usb.usb2.usb_if
+    esp32.usb_if ~ usb.usb.usb_if
     esp32.spi ~ epd_fpc.spi
     esp32.gpio[12] ~ epd_fpc.spi_cs
 
     esp32.gpio[4] ~ epd_dc
     esp32.gpio[3] ~ epd_rst
     esp32.gpio[2] ~ epd_busy
-    
+
     epd_dc ~ epd_fpc.dc
     epd_rst ~ epd_fpc.rst
     epd_busy ~ epd_fpc.busy
@@ -161,29 +170,29 @@ module App:
     fet_source_resistor.resistance = 0.47ohm +/- 5%
     fet_source_resistor.package = "0402"
 
-    mosfet = new NFET
+    mosfet = new MOSFET
     mosfet.lcsc_id = "C7603347"
     mosfet.drain ~> sw_node
     mosfet.source ~> fet_source_resistor ~> power_3v3.lv
     mosfet.source ~> epd_fpc.rese.line
     mosfet.gate ~> epd_fpc.gdr.line
-    
-    # --- Pull-up resistors for control signals ---
-    cs_pullup = new Resistor
-    cs_pullup.resistance = 10kohm +/- 10%
-    cs_pullup.package = "0402"
-    epd_fpc.spi_cs.line ~> cs_pullup ~> power_3v3.hv
-    
+
+    # --- Pull-down resistors for control signals ---
+    cs_pulldown = new Resistor
+    cs_pulldown.resistance = 10kohm +/- 10%
+    cs_pulldown.package = "0402"
+    epd_fpc.spi_cs.line ~> cs_pulldown ~> power_3v3.lv
+
     dc_pullup = new Resistor
     dc_pullup.resistance = 10kohm +/- 10%
     dc_pullup.package = "0402"
     epd_fpc.dc.line ~> dc_pullup ~> power_3v3.hv
-    
+
     rst_pullup = new Resistor
     rst_pullup.resistance = 10kohm +/- 10%
     rst_pullup.package = "0402"
     epd_fpc.rst.line ~> rst_pullup ~> power_3v3.hv
-    
+
     busy_pullup = new Resistor
     busy_pullup.resistance = 10kohm +/- 10%
     busy_pullup.package = "0402"
@@ -198,7 +207,6 @@ module App:
     gdr_pulldown.resistance = 10kohm +/- 10%
     gdr_pulldown.package = "0402"
     epd_fpc.gdr.line ~> gdr_pulldown ~> power_3v3.lv
-
 
     power_vbus.hv.override_net_name = "POWER_VBUS"
     power_3v3.hv.override_net_name = "POWER_3V3"
@@ -216,7 +224,7 @@ module App:
 
     red_led = new LEDIndicatorRed
     assert red_led.current within 1mA to 2mA
-    power_3v3.hv ~> red_led ~> charger.status[1].line
+    power_3v3.hv ~> red_led ~> charger.status_2.line
 
     lil_logo = new atopile_logo_4x4mm
 
