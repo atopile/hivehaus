@@ -1,0 +1,22 @@
+#pragma experiment("TRAITS")
+import has_datasheet
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component Advanced_Monolithic_Systems_AMS1117_3_3_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    trait is_auto_generated<system="ato_part", source="easyeda:C6186", date="2026-03-03T20:51:26.707509+00:00", checksum="1b92b860896bff15d4fc4f98ee6b82243bd78e8e9f716c1a09a8d1c0c30334ea">
+
+    trait is_atomic_part<manufacturer="Advanced Monolithic Systems", partnumber="AMS1117-3.3", footprint="SOT-223-3_L6.5-W3.4-P2.30-LS7.0-BR.kicad_mod", symbol="AMS1117-3.3.kicad_sym", model="SOT-223-4P_L6.5-W3.5-H1.6-LS7.0-P2.30.step">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C6186", manufacturer="Advanced Monolithic Systems", partno="AMS1117-3.3">
+    trait has_designator_prefix<prefix="U">
+    trait has_datasheet<datasheet="https://www.lcsc.com/datasheet/lcsc_datasheet_2410121508_Advanced-Monolithic-Systems-AMS1117-3-3_C6186.pdf">
+
+    # pins
+    signal GND ~ pin 1
+    signal VIN ~ pin 3
+    signal VOUT ~ pin 2
+    VOUT ~ pin 4

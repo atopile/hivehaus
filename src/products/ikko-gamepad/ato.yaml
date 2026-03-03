@@ -1,0 +1,22 @@
+requires-atopile: ^0.14.1004
+
+paths:
+  src: ./
+  layout: ./layouts
+
+builds:
+  default:
+    entry: main.ato:App
+dependencies:
+- type: file
+  identifier: atopile/raspberry-rp2040
+  path: /Users/rallen/git/packages/packages/raspberry-rp2040
+- type: file
+  identifier: atopile/buttons
+  path: /Users/rallen/git/packages/packages/buttons
+- type: file
+  identifier: atopile/usb-connectors
+  path: /Users/rallen/git/packages/packages/usb-connectors
+- type: file
+  identifier: atopile/ti-tlv75901
+  path: /Users/rallen/git/packages/packages/ti-tlv75901

@@ -1,0 +1,110 @@
+#pragma experiment("BRIDGE_CONNECT")
+#pragma experiment("FOR_LOOP")
+#pragma experiment("TRAITS")
+
+import ElectricPower
+import ElectricLogic
+import Electrical
+import Resistor
+import Capacitor
+import Regulator
+import USB2_0
+from "atopile/raspberry-rp2040/raspberry-rp2040.ato" import Raspberry_Pi_RP2040
+from "atopile/usb-connectors/usb-connectors.ato" import USB2_0TypeCHorizontalConnector
+from "atopile/buttons/buttons.ato" import VerticalButton
+from "parts/Advanced_Monolithic_Systems_AMS1117_3_3/Advanced_Monolithic_Systems_AMS1117_3_3.ato" import Advanced_Monolithic_Systems_AMS1117_3_3_package
+
+module FixedLDO3V3 from Regulator:
+    """Fixed 3.3V LDO (AMS1117-3.3) with input/output decoupling."""
+    assert power_in.voltage within 4.5V to 5.5V
+    assert power_out.voltage within 3.3V +/- 5%
+
+    # Package
+    package = new Advanced_Monolithic_Systems_AMS1117_3_3_package
+    power_in.hv ~ package.VIN
+    power_in.lv ~ package.GND
+    power_out.hv ~ package.VOUT
+
+    # Input decoupling
+    input_cap = new Capacitor
+    input_cap.capacitance = 10uF +/- 20%
+    input_cap.package = "0805"
+    power_in.hv ~> input_cap ~> power_in.lv
+
+    # Output decoupling
+    output_cap = new Capacitor
+    output_cap.capacitance = 10uF +/- 20%
+    output_cap.package = "0805"
+    power_out.hv ~> output_cap ~> power_out.lv
+
+module GamepadButton:
+    """Momentary button with pull-up resistor for active-low input."""
+    io = new ElectricLogic
+    button = new VerticalButton
+    pullup = new Resistor
+    pullup.resistance = 10kohm +/- 5%
+    pullup.package = "R0402"
+
+    # Pull-up to 3.3V, button pulls to GND
+    io.reference.hv ~> pullup ~> io.line
+    io.line ~> button ~> io.reference.lv
+
+module App:
+    """USB-C gamepad with D-pad, ABXY, Start, and Select buttons."""
+
+    # --- Power ---
+    power_5v = new ElectricPower
+    power_3v3 = new ElectricPower
+
+    # USB-C connector
+    usb_connector = new USB2_0TypeCHorizontalConnector
+
+    # LDO: 5V -> 3.3V
+    ldo = new FixedLDO3V3
+    usb_connector.usb.usb_if.buspower ~ power_5v
+    power_5v ~> ldo ~> power_3v3
+
+    # --- MCU ---
+    mcu = new Raspberry_Pi_RP2040
+    mcu.power ~ power_3v3
+
+    # USB data
+    usb_connector.usb ~ mcu.usb
+
+    # --- Buttons ---
+    # D-pad
+    btn_up = new GamepadButton
+    btn_down = new GamepadButton
+    btn_left = new GamepadButton
+    btn_right = new GamepadButton
+
+    # Face buttons
+    btn_a = new GamepadButton
+    btn_b = new GamepadButton
+    btn_x = new GamepadButton
+    btn_y = new GamepadButton
+
+    # System buttons
+    btn_start = new GamepadButton
+    btn_select = new GamepadButton
+
+    # Shoulder buttons
+    btn_l = new GamepadButton
+    btn_r = new GamepadButton
+
+    # Connect buttons to GPIOs
+    btn_up.io ~ mcu.gpio[4]
+    btn_down.io ~ mcu.gpio[5]
+    btn_left.io ~ mcu.gpio[6]
+    btn_right.io ~ mcu.gpio[7]
+
+    btn_a.io ~ mcu.gpio[8]
+    btn_b.io ~ mcu.gpio[9]
+    btn_x.io ~ mcu.gpio[10]
+    btn_y.io ~ mcu.gpio[11]
+
+    btn_start.io ~ mcu.gpio[12]
+    btn_select.io ~ mcu.gpio[13]
+
+    btn_l.io ~ mcu.gpio[14]
+    btn_r.io ~ mcu.gpio[15]
