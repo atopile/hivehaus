@@ -1,0 +1,18 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component CHERRY_MX1A_11NW_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    trait is_auto_generated<system="ato_part", source="easyeda:C3316924", date="2025-11-07T20:19:36.820749+00:00", checksum="ec2e14d53bbd816c2efc8c22bd5a19500c9a929cf4375847620ee72f150a93c6">
+
+    trait is_atomic_part<manufacturer="CHERRY", partnumber="MX1A-11NW", footprint="SW-TH_MX1A-11NW.kicad_mod", symbol="MX1A-11NW.kicad_sym", model="asm_mx_asm_PCB.STEP">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C3316924", manufacturer="CHERRY", partno="MX1A-11NW">
+    trait has_designator_prefix<prefix="SW">
+
+    # pins
+    pin 1
+    pin 2

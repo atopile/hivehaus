@@ -1,0 +1,17 @@
+(fp_lib_table
+    (version 7)
+    (lib
+        (name "ALPSALPINE_RS60N11M9A0F")
+        (type "KiCad")
+        (uri "${KIPRJMOD}/../../parts/ALPSALPINE_RS60N11M9A0F")
+        (options "")
+        (descr "atopile: part lib: ALPSALPINE_RS60N11M9A0F")
+    )
+    (lib
+        (name "CHERRY_MX1A_11NW")
+        (type "KiCad")
+        (uri "${KIPRJMOD}/../../parts/CHERRY_MX1A_11NW")
+        (options "")
+        (descr "atopile: part lib: CHERRY_MX1A_11NW")
+    )
+)

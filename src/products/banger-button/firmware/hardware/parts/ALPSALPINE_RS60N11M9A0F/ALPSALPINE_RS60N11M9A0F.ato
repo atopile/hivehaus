@@ -1,0 +1,24 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component ALPSALPINE_RS60N11M9A0F_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    trait is_auto_generated<system="ato_part", source="easyeda:C470705", date="2025-11-07T22:06:17.115890+00:00", checksum="b13aa17dbb41e7a26ccd2013d98656ff94b70bd542a58719a751db2e79127d34">
+
+    trait is_atomic_part<manufacturer="ALPSALPINE", partnumber="RS60N11M9A0F", footprint="RES-ADJ-TH_RS60N11M9A0F.kicad_mod", symbol="RS60N11M9A0F.kicad_sym", model="RES-ADJ-TH_RS60N11M9A0F.STEP">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C470705", manufacturer="ALPSALPINE", partno="RS60N11M9A0F">
+    trait has_designator_prefix<prefix="R">
+
+    # pins
+    pin 2
+    pin 1
+    pin 3
+    signal A ~ pin A
+    signal B ~ pin B
+    signal L ~ pin L1
+    L ~ pin L2
+    signal T ~ pin T

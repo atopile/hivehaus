@@ -1,0 +1,7 @@
+from "parts/CHERRY_MX1A_11NW/CHERRY_MX1A_11NW.ato" import CHERRY_MX1A_11NW_package
+from "parts/ALPSALPINE_RS60N11M9A0F/ALPSALPINE_RS60N11M9A0F.ato" import ALPSALPINE_RS60N11M9A0F_package
+module App:
+    bottom_switches = new CHERRY_MX1A_11NW_package[4]
+    banger_switch = new CHERRY_MX1A_11NW_package
+
+    faders = new ALPSALPINE_RS60N11M9A0F_package[4]
