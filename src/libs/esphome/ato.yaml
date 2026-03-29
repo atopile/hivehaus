@@ -1,0 +1,15 @@
+requires-atopile: "0.11.1"
+
+paths:
+  src: ./
+  layout: ./layouts
+
+package:
+  identifier: hivehaus/esphome
+  repository: https://github.com/hivehaus/hivehaus
+  version: "0.1.0"
+  authors:
+    - name: atopile
+      email: hi@atopile.io
+  summary: ESPHome configuration
+  license: MIT license
