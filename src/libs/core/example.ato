@@ -1,0 +1,76 @@
+#pragma experiment("BRIDGE_CONNECT")
+#pragma experiment("FOR_LOOP")
+
+import ElectricPower
+import I2C
+
+from "main.ato" import Core
+from "power.ato" import HiveCorePowerSupply
+
+module ExampleProduct:
+    """
+    Example product showing how to use the Hivehaus Core library.
+    This demonstrates connecting a sensor via I2C and using GPIOs.
+    """
+    
+    # Instantiate the Core module
+    core = new Core
+    
+    # Example: Connect an I2C sensor to the HiveExpansion connector
+    # The sensor would use the shared I2C bus and 3.3V power
+    
+    # Example: Use a GPIO for a button
+    # button_signal ~ core.hiveio.io0
+    
+    # Example: Use another GPIO for an LED
+    # led_signal ~ core.hiveio.io1
+    
+    # The Core provides:
+    # - USB-C for power and programming
+    # - ESP32-C3 with WiFi/BLE
+    # - I2C bus on GPIO5/6 (shared with RGB LED at 0x58)
+    # - SPI bus on GPIO7/8/10
+    # - UART on GPIO20/21
+    # - 5 flexible GPIOs (GPIO0-4, all ADC capable)
+    # - STEMMA QT/Qwiic expansion connector
+    # - RGB status LED (controlled via I2C)
+    # - Power indicator LED
+
+module BatteryPoweredExample:
+    """
+    Example showing how to retype the power supply for battery operation.
+    """
+    
+    # Instantiate the Core
+    core = new Core
+    
+    # Retype the power supply to a battery-powered version
+    # core.power_supply -> BatteryPowerSupply
+    
+    # Note: BatteryPowerSupply would need to:
+    # 1. Inherit from HiveCorePowerSupply
+    # 2. Provide vbus_in, power_5v, and power_3v3 interfaces
+    # 3. Include battery management, charging, and power path
+
+# Example battery power supply module (skeleton)
+module BatteryPowerSupply from HiveCorePowerSupply:
+    """
+    Example battery power supply that could replace DefaultPowerSupply.
+    This is just a skeleton showing the required structure.
+    """
+    
+    # Required interfaces (inherited from HiveCorePowerSupply)
+    # vbus_in - Input from USB-C
+    # power_5v - 5V output
+    # power_3v3 - 3.3V output
+    
+    # Battery management components would go here:
+    # - Battery charger IC
+    # - Battery protection
+    # - Power path management
+    # - Buck/boost converters as needed
+    
+    # For now, just pass through like the default
+    vbus_in ~ power_5v
+    # Would need actual 3.3V regulator here
+    # power_5v ~> regulator ~> power_3v3

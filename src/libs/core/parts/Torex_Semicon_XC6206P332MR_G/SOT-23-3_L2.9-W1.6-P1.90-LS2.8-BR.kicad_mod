@@ -1,0 +1,171 @@
+(footprint "Torex_Semicon_XC6206P332MR_G:SOT-23-3_L2.9-W1.6-P1.90-LS2.8-BR"
+    (layer "F.Cu")
+    (descr "")
+    (version 20241229)
+    (generator "faebryk")
+    (generator_version "v5")
+    (tedit "5DC5F6A4")
+    (property "Reference" "REF**"
+        (at 0 -4.95 0)
+        (layer "F.SilkS")
+        (hide no)
+        (uuid "4770c0d5-2e8b-4acd-b611-cbd355acd54f")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+    )
+    (property "Value" "SOT-23-3_L2.9-W1.6-P1.90-LS2.8-BR"
+        (at 0 4.95 0)
+        (layer "F.Fab")
+        (hide no)
+        (uuid "9e574245-ea83-4fd8-b9d4-c4efbaa0c36a")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+    )
+    (property "checksum" "838f3c65f8a14bbc5c2fbd55cf9ecc011411191f978c1f3b81305b9220afe875"
+        (at 0 0 0)
+        (layer "User.9")
+        (hide no)
+        (uuid "45c315ae-68a0-424e-9ea9-73259e8cf50b")
+        (effects
+            (font
+                (size 0.125 0.125)
+                (thickness 0.01875)
+            )
+            (hide yes)
+        )
+    )
+    (attr smd)
+    (fp_line
+        (start 0.88 -1.54)
+        (end -0.88 -1.54)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "e2dd3e03-aaa1-46d9-b8b3-d600d8a6d3d7")
+    )
+    (fp_line
+        (start -0.88 -1.54)
+        (end -0.88 -0.49)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "db35e4e3-7a08-4f3a-bdcd-7847064218f1")
+    )
+    (fp_line
+        (start 0.88 1.54)
+        (end -0.88 1.54)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "4e30633b-fd6b-44be-82bb-e9686aa3453a")
+    )
+    (fp_line
+        (start -0.88 1.54)
+        (end -0.88 0.49)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "4ab60f53-a3f5-4217-9608-2d90403c7aec")
+    )
+    (fp_line
+        (start 0.88 -0.46)
+        (end 0.88 0.46)
+        (stroke
+            (width 0.15)
+            (type solid)
+        )
+        (layer "F.SilkS")
+        (uuid "9ba55fdd-55dd-40ad-a693-0c1d6e397a0c")
+    )
+    (fp_circle
+        (center 1.4 1.46)
+        (end 1.43 1.46)
+        (stroke
+            (width 0.06)
+            (type solid)
+        )
+        (fill no)
+        (layer "F.Fab")
+        (uuid "941b3ea2-d02e-4635-9205-0e295676bd0d")
+    )
+    (fp_circle
+        (center 1.65 0.95)
+        (end 1.75 0.95)
+        (stroke
+            (width 0.2)
+            (type solid)
+        )
+        (fill no)
+        (layer "Cmts.User")
+        (uuid "d6d76136-0f00-4ce2-a3d4-d39992ad3048")
+    )
+    (fp_text user "%R"
+        (at 0 0 0)
+        (layer "F.Fab")
+        (uuid "935f2877-d4fb-4d41-a68b-c947a63abdea")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+        (unlocked no)
+    )
+    (fp_text user "${REFERENCE}"
+        (at 0 -4.95 0)
+        (layer "F.SilkS")
+        (uuid "4770c0d5-2e8b-4acd-b611-cbd355acd54f")
+        (effects
+            (font
+                (size 1 1)
+                (thickness 0.15)
+            )
+        )
+        (unlocked no)
+    )
+    (pad "1" smd rect
+        (at 1.24 0.95 0)
+        (size 1.07 0.6)
+        (layers "F.Cu" "F.Paste" "F.Mask")
+        (uuid "12ef93b1-6160-467b-862b-1d65231b0872")
+    )
+    (pad "2" smd rect
+        (at 1.24 -0.95 0)
+        (size 1.07 0.6)
+        (layers "F.Cu" "F.Paste" "F.Mask")
+        (uuid "94f28df6-7987-4eb6-bb82-d35c8681e900")
+    )
+    (pad "3" smd rect
+        (at -1.24 0 0)
+        (size 1.07 0.6)
+        (layers "F.Cu" "F.Paste" "F.Mask")
+        (uuid "8fec6c70-7db2-4cea-98f1-3b56ba6b805d")
+    )
+    (model "${KIPRJMOD}/../../parts/Torex_Semicon_XC6206P332MR_G/SOT-23-3L_L2.9-W1.6-H1.1-LS2.8-P0.95.step"
+        (offset
+            (xyz 0 0 0)
+        )
+        (scale
+            (xyz 1 1 1)
+        )
+        (rotate
+            (xyz 0 0 270)
+        )
+    )
+)

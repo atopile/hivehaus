@@ -1,0 +1,48 @@
+#pragma experiment("BRIDGE_CONNECT")
+#pragma experiment("FOR_LOOP")
+#pragma experiment("TRAITS")
+
+import ElectricPower
+import Electrical
+import Capacitor
+import Resistor
+import can_bridge
+
+from "parts/Advanced_Monolithic_Systems_AMS1117_3_3/Advanced_Monolithic_Systems_AMS1117_3_3.ato" import Advanced_Monolithic_Systems_AMS1117_3_3_driver
+
+module HiveCorePowerSupply:
+    """
+    Base power supply interface that all implementations must follow.
+    This ensures consistent interfaces for retype compatibility.
+    """
+    # Input from USB-C VBUS
+    vbus_in = new ElectricPower
+    
+    # Output power rails
+    power_5v = new ElectricPower   # 5V output rail (passthrough from USB)
+    power_3v3 = new ElectricPower  # 3.3V output rail (regulated)
+
+module DefaultPowerSupply from HiveCorePowerSupply:
+    """
+    Default USB-powered implementation with 5V passthrough and 3.3V LDO.
+    Products can retype this module to implement battery power, buck converters, etc.
+    """
+    # LDO for 5V to 3.3V conversion
+    ldo = new Advanced_Monolithic_Systems_AMS1117_3_3_driver
+    
+    # Connect VBUS directly to 5V rail (passthrough)
+    vbus_in ~ power_5v
+    
+    # LDO conversion to 3.3V - connect directly without bridging
+    power_5v ~ ldo.power_in
+    ldo.power_out ~ power_3v3
+    
+    # Add bulk capacitor on input
+    input_cap = new Capacitor
+    input_cap.capacitance = 10uF +/- 20%
+    assert input_cap.max_voltage >= 10V
+    input_cap.package = "C0805"
+    power_5v.hv ~> input_cap ~> power_5v.lv
+    
+    # Output capacitor is handled by the LDO driver itself
+

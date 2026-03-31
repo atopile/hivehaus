@@ -1,0 +1,49 @@
+#pragma experiment("TRAITS")
+#pragma experiment("BRIDGE_CONNECT")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+import ElectricPower
+import Capacitor
+
+component Advanced_Monolithic_Systems_AMS1117_3_3_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    #trait is_auto_generated<system="ato_part", source="easyeda:C6186", date="2025-08-08T23:03:06.891284+00:00", checksum="0270fe0fbf796a25686cff73d26055531676e12d12d0da81ca82b23520d307ae">
+
+    trait is_atomic_part<manufacturer="Advanced Monolithic Systems", partnumber="AMS1117-3.3", footprint="SOT-223-3_L6.5-W3.4-P2.30-LS7.0-BR.kicad_mod", symbol="AMS1117-3.3.kicad_sym", model="SOT-223-4P_L6.5-W3.5-H1.6-LS7.0-P2.30.step">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C6186", manufacturer="Advanced Monolithic Systems", partno="AMS1117-3.3">
+    trait has_designator_prefix<prefix="U">
+
+    # pins
+    signal GND ~ pin 1
+    signal VIN ~ pin 3
+    signal VOUT ~ pin 2
+    VOUT ~ pin 4
+
+module Advanced_Monolithic_Systems_AMS1117_3_3_driver:
+    """
+    AMS1117-3.3 Linear Voltage Regulator
+    Input: 4.75V to 15V
+    Output: 3.3V @ 1A max
+    """
+    # Power interfaces
+    power_in = new ElectricPower
+    power_out = new ElectricPower
+    
+    # Component
+    package = new Advanced_Monolithic_Systems_AMS1117_3_3_package
+    
+    # Pin connections
+    package.GND ~ power_in.lv
+    package.GND ~ power_out.lv
+    package.VIN ~ power_in.hv
+    package.VOUT ~ power_out.hv
+    
+    # Output capacitor (required for stability)
+    output_cap = new Capacitor
+    output_cap.capacitance = 22uF +/- 20%
+    assert output_cap.max_voltage >= 6.3V
+    output_cap.package = "C0805"
+    power_out.hv ~> output_cap ~> power_out.lv

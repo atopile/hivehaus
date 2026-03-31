@@ -1,0 +1,47 @@
+#pragma experiment("BRIDGE_CONNECT")
+#pragma experiment("FOR_LOOP")
+
+import I2C
+import SPI
+import UART
+import ElectricLogic
+import ElectricPower
+
+interface HiveIO:
+    """
+    Main interface for product-accessible ESP32-C3 peripherals.
+    All pins follow ESP32-C3 package defaults for consistency.
+    """
+    # Shared I2C bus (GPIO5/6 - package defaults)
+    # Also used by Core RGB LED controller at address 0x58
+    i2c = new I2C
+    
+    # Product SPI bus (GPIO7/8/10 - package defaults)
+    spi = new SPI
+    
+    # Product UART bus (GPIO20/21 - package defaults)
+    uart = new UART
+    
+    # Flexible GPIOs (all ADC capable)
+    io0 = new ElectricLogic  # GPIO0 - ADC1_CH0
+    io1 = new ElectricLogic  # GPIO1 - ADC1_CH1
+    io2 = new ElectricLogic  # GPIO2 - ADC1_CH2, boot strap pin
+    io3 = new ElectricLogic  # GPIO3 - ADC1_CH3
+    io4 = new ElectricLogic  # GPIO4 - ADC1_CH4, JTAG TMS
+    
+    # Addressable LED data line (GPIO9)
+    led_data = new ElectricLogic  # Data out from addressable RGB LED
+    
+    # Power reference for all HiveIO signals
+    power = new ElectricPower
+
+interface HiveExpansion:
+    """
+    STEMMA QT / Qwiic compatible I2C expansion connector.
+    Standard 4-pin JST-SH pinout for ecosystem compatibility.
+    """
+    # I2C interface (same as hiveio.i2c, GPIO5/6)
+    i2c = new I2C
+    
+    # 3.3V power for connected devices
+    power = new ElectricPower
